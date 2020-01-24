@@ -117,14 +117,6 @@ class FRMBASE {
 		);
 
 		add_settings_field(
-			'rows_8', // id
-			'rows', // title
-			array( $this, 'rows_8_callback' ), // callback
-			'frm-base-admin', // page
-			'frm_base_setting_section' // section
-		);
-
-		add_settings_field(
 			'core_name_9', // id
 			'core_name', // title
 			array( $this, 'core_name_9_callback' ), // callback
@@ -165,10 +157,6 @@ class FRMBASE {
 
 		if ( isset( $input['qf_7'] ) ) {
 			$sanitary_values['qf_7'] = sanitize_text_field( $input['qf_7'] );
-		}
-
-		if ( isset( $input['rows_8'] ) ) {
-			$sanitary_values['rows_8'] = sanitize_text_field( $input['rows_8'] );
 		}
 
 		if ( isset( $input['core_name_9'] ) ) {
@@ -238,13 +226,6 @@ class FRMBASE {
 		);
 	}
 
-	public function rows_8_callback() {
-		printf(
-			'<input class="regular-text" type="text" name="frm_base_option_name[rows_8]" id="rows_8" value="%s">',
-			isset( $this->frm_base_options['rows_8'] ) ? esc_attr( $this->frm_base_options['rows_8']) : ''
-		);
-	}
-
 	public function core_name_9_callback() {
 		printf(
 			'<input class="regular-text" type="text" name="frm_base_option_name[core_name_9]" id="core_name_9" value="%s">',
@@ -267,6 +248,5 @@ if ( is_admin() )
  * $pf_5 = $frm_base_options['pf_5']; // pf
  * $ps_6 = $frm_base_options['ps_6']; // ps
  * $qf_7 = $frm_base_options['qf_7']; // qf
- * $rows_8 = $frm_base_options['rows_8']; // rows
  * $core_name_9 = $frm_base_options['core_name_9']; // core_name
  */
