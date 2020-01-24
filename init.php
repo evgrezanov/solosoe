@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Farma Base MVP
+ * Plugin Name: SOLOSOE
  * Plugin URI:  <a href="https://www.upwork.com/freelancers/~01ea58721977099d53">Evgeniy Rezanov</a>
  * Description: Custom plugin
  * Author:      Evgeniy Rezanov
@@ -11,30 +11,30 @@
  */
 
 // Exit if accessed directly
+//https://codepen.io/redmonkey73/pen/rNaNKGB
+//https://www.pronamic.nl/2018/10/twitter-typeahead-js-en-de-wordpress-rest-api/
+//https://www.kiesuwcursus.nl/
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'PRM_PATH', plugin_dir_path( __FILE__ ) );
-define( 'PRM_FILE', __FILE__ );
-define( 'PRM_URL', plugin_dir_url( __FILE__ ) );
+define( 'SOLOSOE_PATH', plugin_dir_path( __FILE__ ) );
+define( 'SOLOSOE_FILE', __FILE__ );
+define( 'SOLOSOE_URL', plugin_dir_url( __FILE__ ) );
 
 /**
  * Main class
  *
  * @since 1.0.0
- * @package PRM_BASE
+ * @package SOLOSOE
  */
-class PRM_BASE {
+class SOLOSOE {
 
     /**
     * The init
     */
     public static function init(){
         add_action( 'wp', [__CLASS__, 'members_only'] );
-
         require_once('inc/class-options.php');
         require_once('inc/class-solr-request.php');
-        
-        //require_once('inc/class-custom-metafields.php');
     }
 
     // Redirect users who arent logged in...
@@ -46,4 +46,4 @@ class PRM_BASE {
     }
 }
 
-PRM_BASE::init();
+SOLOSOE::init();
