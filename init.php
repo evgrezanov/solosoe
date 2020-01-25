@@ -14,6 +14,7 @@
 //https://codepen.io/redmonkey73/pen/rNaNKGB
 //https://www.pronamic.nl/2018/10/twitter-typeahead-js-en-de-wordpress-rest-api/
 //https://www.kiesuwcursus.nl/
+
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 define( 'SOLOSOE_PATH', plugin_dir_path( __FILE__ ) );
@@ -34,7 +35,7 @@ class SOLOSOE {
     public static function init(){
         add_action( 'wp', [__CLASS__, 'members_only'] );
         require_once('inc/class-options.php');
-        require_once('inc/class-solr-request.php');
+        require_once('inc/class-search-form.php');
     }
 
     // Redirect users who arent logged in...

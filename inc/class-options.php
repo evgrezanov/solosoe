@@ -1,62 +1,81 @@
 <?php
 
-class FRMBASE {
-	private $frm_base_options;
+/*
+ * Retrieve this value with:
+ * 
+ * $solosoe_options = get_option( 'solrurl_param' ); // Array of All Options
+ * $ip_0 = $solosoe_options['ip_0']; // IP
+ * $port_1 = $solosoe_options['port_1']; // Port
+ * $deftype_2 = $solosoe_options['deftype_2']; // defType
+ * $fl_3 = $solosoe_options['fl_3']; // fl
+ * $mm_4 = $solosoe_options['mm_4']; // mm
+ * $pf_5 = $solosoe_options['pf_5']; // pf
+ * $ps_6 = $solosoe_options['ps_6']; // ps
+ * $qf_7 = $solosoe_options['qf_7']; // qf
+ * $core_name_9 = $solosoe_options['core_name_9']; // core_name
+ * 
+ */
+
+
+ class SOLOSOE_OPTIONS {
+	
+	private $solosoe_options;
 
 	public function __construct() {
-		add_action( 'admin_menu', array( $this, 'frm_base_add_plugin_page' ) );
-		add_action( 'admin_init', array( $this, 'frm_base_page_init' ) );
+		add_action( 'admin_menu', array( $this, 'solosoe_add_plugin_page' ) );
+		add_action( 'admin_init', array( $this, 'solosoe_page_init' ) );
 	}
 
-	public function frm_base_add_plugin_page() {
+	public function solosoe_add_plugin_page() {
 		add_menu_page(
-			'FRM-BASE', // page_title
-			'FRM-BASE', // menu_title
-			'manage_options', // capability
-			'frm-base', // menu_slug
-			array( $this, 'frm_base_create_admin_page' ), // function
+			'SOLOSOE Options', 
+			'SOLOSOE', 
+			'manage_options',
+			'solosoe-options',
+			array( $this, 'solosoe_create_admin_page' ),
 			'dashicons-admin-tools', // icon_url
 			3 // position
 		);
 	}
 
-	public function frm_base_create_admin_page() {
-		$this->frm_base_options = get_option( 'frm_base_option_name' ); ?>
+	public function solosoe_create_admin_page() {
+		$this->solosoe_options = get_option( 'solrurl_param' ); ?>
 
 		<div class="wrap">
-			<h2>FRM-BASE</h2>
+			<h2>SOLOSOE options page</h2>
 			<p>Solr connection parameters</p>
+			<a href="http://52.209.195.0:8984/solr/product_name_code_v2/select?defType=dismax&fl=*%2Cscore&mm=70%25&pf=name&ps=1&qf=name_code%20&q=Peusek%20Arcandol%20spray">http://52.209.195.0:8984/solr/product_name_code_v2/select?defType=dismax&fl=*%2Cscore&mm=70%25&pf=name&ps=1&qf=name_code%20&q=Peusek%20Arcandol%20spray</a>
 			<?php settings_errors(); ?>
 
 			<form method="post" action="options.php">
 				<?php
-					settings_fields( 'frm_base_option_group' );
-					do_settings_sections( 'frm-base-admin' );
+					settings_fields( 'solosoe_option_group' );
+					do_settings_sections( 'solosoe-admin' );
 					submit_button();
 				?>
 			</form>
 		</div>
 	<?php }
 
-	public function frm_base_page_init() {
+	public function solosoe_page_init() {
 		register_setting(
-			'frm_base_option_group', // option_group
-			'frm_base_option_name', // option_name
-			array( $this, 'frm_base_sanitize' ) // sanitize_callback
+			'solosoe_option_group', // option_group
+			'solrurl_param', // option_name
+			array( $this, 'solosoe_sanitize' ) // sanitize_callback
 		);
 
 		add_settings_section(
 			'frm_base_setting_section', // id
 			'Settings', // title
 			array( $this, 'frm_base_section_info' ), // callback
-			'frm-base-admin' // page
+			'solosoe-admin' // page
 		);
 
 		add_settings_field(
 			'ip_0', // id
 			'IP', // title
 			array( $this, 'ip_0_callback' ), // callback
-			'frm-base-admin', // page
+			'solosoe-admin', // page
 			'frm_base_setting_section' // section
 		);
 
@@ -64,7 +83,7 @@ class FRMBASE {
 			'port_1', // id
 			'Port', // title
 			array( $this, 'port_1_callback' ), // callback
-			'frm-base-admin', // page
+			'solosoe-admin', // page
 			'frm_base_setting_section' // section
 		);
 
@@ -72,7 +91,7 @@ class FRMBASE {
 			'deftype_2', // id
 			'defType', // title
 			array( $this, 'deftype_2_callback' ), // callback
-			'frm-base-admin', // page
+			'solosoe-admin', // page
 			'frm_base_setting_section' // section
 		);
 
@@ -80,7 +99,7 @@ class FRMBASE {
 			'fl_3', // id
 			'fl', // title
 			array( $this, 'fl_3_callback' ), // callback
-			'frm-base-admin', // page
+			'solosoe-admin', // page
 			'frm_base_setting_section' // section
 		);
 
@@ -88,7 +107,7 @@ class FRMBASE {
 			'mm_4', // id
 			'mm', // title
 			array( $this, 'mm_4_callback' ), // callback
-			'frm-base-admin', // page
+			'solosoe-admin', // page
 			'frm_base_setting_section' // section
 		);
 
@@ -96,7 +115,7 @@ class FRMBASE {
 			'pf_5', // id
 			'pf', // title
 			array( $this, 'pf_5_callback' ), // callback
-			'frm-base-admin', // page
+			'solosoe-admin', // page
 			'frm_base_setting_section' // section
 		);
 
@@ -104,7 +123,7 @@ class FRMBASE {
 			'ps_6', // id
 			'ps', // title
 			array( $this, 'ps_6_callback' ), // callback
-			'frm-base-admin', // page
+			'solosoe-admin', // page
 			'frm_base_setting_section' // section
 		);
 
@@ -112,7 +131,7 @@ class FRMBASE {
 			'qf_7', // id
 			'qf', // title
 			array( $this, 'qf_7_callback' ), // callback
-			'frm-base-admin', // page
+			'solosoe-admin', // page
 			'frm_base_setting_section' // section
 		);
 
@@ -120,12 +139,12 @@ class FRMBASE {
 			'core_name_9', // id
 			'core_name', // title
 			array( $this, 'core_name_9_callback' ), // callback
-			'frm-base-admin', // page
+			'solosoe-admin', // page
 			'frm_base_setting_section' // section
 		);
 	}
 
-	public function frm_base_sanitize($input) {
+	public function solosoe_sanitize($input) {
 		$sanitary_values = array();
 		if ( isset( $input['ip_0'] ) ) {
 			$sanitary_values['ip_0'] = sanitize_text_field( $input['ip_0'] );
@@ -172,81 +191,67 @@ class FRMBASE {
 
 	public function ip_0_callback() {
 		printf(
-			'<input class="regular-text" type="text" name="frm_base_option_name[ip_0]" id="ip_0" value="%s">',
-			isset( $this->frm_base_options['ip_0'] ) ? esc_attr( $this->frm_base_options['ip_0']) : ''
+			'<input class="regular-text" type="text" name="solrurl_param[ip_0]" id="ip_0" value="%s">',
+			isset( $this->solosoe_options['ip_0'] ) ? esc_attr( $this->solosoe_options['ip_0']) : ''
 		);
 	}
 
 	public function port_1_callback() {
 		printf(
-			'<input class="regular-text" type="text" name="frm_base_option_name[port_1]" id="port_1" value="%s">',
-			isset( $this->frm_base_options['port_1'] ) ? esc_attr( $this->frm_base_options['port_1']) : ''
+			'<input class="regular-text" type="text" name="solrurl_param[port_1]" id="port_1" value="%s">',
+			isset( $this->solosoe_options['port_1'] ) ? esc_attr( $this->solosoe_options['port_1']) : ''
 		);
 	}
 
 	public function deftype_2_callback() {
 		printf(
-			'<input class="regular-text" type="text" name="frm_base_option_name[deftype_2]" id="deftype_2" value="%s">',
-			isset( $this->frm_base_options['deftype_2'] ) ? esc_attr( $this->frm_base_options['deftype_2']) : ''
+			'<input class="regular-text" type="text" name="solrurl_param[deftype_2]" id="deftype_2" value="%s">',
+			isset( $this->solosoe_options['deftype_2'] ) ? esc_attr( $this->solosoe_options['deftype_2']) : ''
 		);
 	}
 
 	public function fl_3_callback() {
 		printf(
-			'<input class="regular-text" type="text" name="frm_base_option_name[fl_3]" id="fl_3" value="%s">',
-			isset( $this->frm_base_options['fl_3'] ) ? esc_attr( $this->frm_base_options['fl_3']) : ''
+			'<input class="regular-text" type="text" name="solrurl_param[fl_3]" id="fl_3" value="%s">',
+			isset( $this->solosoe_options['fl_3'] ) ? esc_attr( $this->solosoe_options['fl_3']) : ''
 		);
 	}
 
 	public function mm_4_callback() {
 		printf(
-			'<input class="regular-text" type="text" name="frm_base_option_name[mm_4]" id="mm_4" value="%s">',
-			isset( $this->frm_base_options['mm_4'] ) ? esc_attr( $this->frm_base_options['mm_4']) : ''
+			'<input class="regular-text" type="text" name="solrurl_param[mm_4]" id="mm_4" value="%s">',
+			isset( $this->solosoe_options['mm_4'] ) ? esc_attr( $this->solosoe_options['mm_4']) : ''
 		);
 	}
 
 	public function pf_5_callback() {
 		printf(
-			'<input class="regular-text" type="text" name="frm_base_option_name[pf_5]" id="pf_5" value="%s">',
-			isset( $this->frm_base_options['pf_5'] ) ? esc_attr( $this->frm_base_options['pf_5']) : ''
+			'<input class="regular-text" type="text" name="solrurl_param[pf_5]" id="pf_5" value="%s">',
+			isset( $this->solosoe_options['pf_5'] ) ? esc_attr( $this->solosoe_options['pf_5']) : ''
 		);
 	}
 
 	public function ps_6_callback() {
 		printf(
-			'<input class="regular-text" type="text" name="frm_base_option_name[ps_6]" id="ps_6" value="%s">',
-			isset( $this->frm_base_options['ps_6'] ) ? esc_attr( $this->frm_base_options['ps_6']) : ''
+			'<input class="regular-text" type="text" name="solrurl_param[ps_6]" id="ps_6" value="%s">',
+			isset( $this->solosoe_options['ps_6'] ) ? esc_attr( $this->solosoe_options['ps_6']) : ''
 		);
 	}
 
 	public function qf_7_callback() {
 		printf(
-			'<input class="regular-text" type="text" name="frm_base_option_name[qf_7]" id="qf_7" value="%s">',
-			isset( $this->frm_base_options['qf_7'] ) ? esc_attr( $this->frm_base_options['qf_7']) : ''
+			'<input class="regular-text" type="text" name="solrurl_param[qf_7]" id="qf_7" value="%s">',
+			isset( $this->solosoe_options['qf_7'] ) ? esc_attr( $this->solosoe_options['qf_7']) : ''
 		);
 	}
 
 	public function core_name_9_callback() {
 		printf(
-			'<input class="regular-text" type="text" name="frm_base_option_name[core_name_9]" id="core_name_9" value="%s">',
-			isset( $this->frm_base_options['core_name_9'] ) ? esc_attr( $this->frm_base_options['core_name_9']) : ''
+			'<input class="regular-text" type="text" name="solrurl_param[core_name_9]" id="core_name_9" value="%s">',
+			isset( $this->solosoe_options['core_name_9'] ) ? esc_attr( $this->solosoe_options['core_name_9']) : ''
 		);
 	}
-
 }
 if ( is_admin() )
-	$frm_base = new FRMBASE();
+	$frm_base = new SOLOSOE_OPTIONS();
 
-/*
- * Retrieve this value with:
- * $frm_base_options = get_option( 'frm_base_option_name' ); // Array of All Options
- * $ip_0 = $frm_base_options['ip_0']; // IP
- * $port_1 = $frm_base_options['port_1']; // Port
- * $deftype_2 = $frm_base_options['deftype_2']; // defType
- * $fl_3 = $frm_base_options['fl_3']; // fl
- * $mm_4 = $frm_base_options['mm_4']; // mm
- * $pf_5 = $frm_base_options['pf_5']; // pf
- * $ps_6 = $frm_base_options['ps_6']; // ps
- * $qf_7 = $frm_base_options['qf_7']; // qf
- * $core_name_9 = $frm_base_options['core_name_9']; // core_name
- */
