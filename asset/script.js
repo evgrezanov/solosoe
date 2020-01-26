@@ -1,5 +1,4 @@
 jQuery( document ).ready( function( $ ) {
-
     // url for request Solr
     var solrUrl = window['solrUrl'];
 
@@ -10,13 +9,13 @@ jQuery( document ).ready( function( $ ) {
 
     // transform solr search result
     var transform_products = function( products ) {
+        console.log(products);
         return $.map( products, function( product ) {
             return {
-                id: product.id,
-                name_code: product.name_code,
-                prd_id: product.prd_id,
-                _version_: product._version_,
-                score: product.score
+                id: product.response.docs.id,
+                name_code: product.response.docs.name_code,
+                prd_id: product.response.docs.prd_id,
+                score: product.response.docs.score
             };
         } );
     };
@@ -27,37 +26,56 @@ jQuery( document ).ready( function( $ ) {
         {
             name: 'products',
             source: new Bloodhound( {
-            datumTokenizer: Bloodhound.tokenizers.obj.whitespace( [ 'name_code', 'id' ] ),
-            queryTokenizer: Bloodhound.tokenizers.whitespace,
-            identify: function( product ) {
-                return product.id;
-            },
-            sufficient: 1,
-            /*prefetch: {
-                url: 'https://demo.wp-api.org/wp-json/wp/v2/categories?per_page=20',
-                cacheKey: 'products',
-                transform: transform_products
-            },*/
-            remote: {
-                url: 'http://52.209.195.0:8984/solr/product_name_code_v2/select?defType=dismax&fl=*%2Cscore&mm=70%25&pf=name&ps=1&qf=name_code%20&q=%QUERY',
-                wildcard: '%QUERY',
-                transform: transform_products
-            },
-            indexRemote: true
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name_code'),
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                identify: function( product ) {
+                    return product.id;
+                },
+                sufficient: 1,
+                remote: {
+                    url: 'http://52.209.195.0:8984/solr/product_name_code_v2/select?defType=dismax&fl=*%2Cscore&mm=70%25&pf=name&ps=1&qf=name_code&q=%QUERY&wt=json',
+                    wildcard: '%QUERY',
+                    //transform: transform_products,
+                    prepare: function(query, settings) {
+                        settings.beforeSend = function(jqXHR, settings) {
+                            settings.xhrFields = { withCredentials: true };
+                        };
+                        settings.crossDomain = true;
+                        settings.dataType = "jsonp";
+                        settings.url = settings.url.replace('%QUERY', query);
+                        //console.log(settings);
+                        return settings;
+                    },
+                    transform: function (data) { 
+                        //response = data.response.docs;
+                        response = JSON.stringify(data.response.docs);         
+                        var newData = [];               
+                        data.forEach(function (item) {
+                            newData.push({'name': item});
+                        });
+                        console.log(newData);
+                        return response;
+                    }
+                },
+                //indexRemote: true
             } ),
             display: display_product
         }
     ];
-    
+
     // init typeahead
     $( '#solr-typeahead' ).typeahead( {
-        minLength: 2,
-        highlight: true
-    }, datasets );
+        minLength: 3,
+        highlight: true,
+        hint: true,
+        displayKey: 'name_code',
+        templates: {
+            empty: [
+                '<div class="noitems">',
+                'No Items Found',
+                '</div>'
+            ].join('\n')
+        }
+    }, datasets);
 
 } );
-
-document.addEventListener('DOMContentLoaded', function() {
-    console.log(solrUrl);
-    //http://52.209.195.0:8984/solr/product_name_code_v2/select?defType=dismax&fl=*%2Cscore&mm=70%25&pf=name&ps=1&qf=name_code%20&q=Peusek%20Arcandol%20spray
- }, false);

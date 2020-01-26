@@ -33,7 +33,7 @@ class SOLOSOE {
     * The init
     */
     public static function init(){
-        add_action( 'wp', [__CLASS__, 'members_only'] );
+        //add_action( 'wp', [__CLASS__, 'members_only'] );
         require_once('inc/class-options.php');
         require_once('inc/class-search-form.php');
     }

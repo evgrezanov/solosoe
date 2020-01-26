@@ -44,7 +44,7 @@
 		<div class="wrap">
 			<h2>SOLOSOE options page</h2>
 			<p>Solr connection parameters</p>
-			<a href="http://52.209.195.0:8984/solr/product_name_code_v2/select?defType=dismax&fl=*%2Cscore&mm=70%25&pf=name&ps=1&qf=name_code%20&q=Peusek%20Arcandol%20spray">http://52.209.195.0:8984/solr/product_name_code_v2/select?defType=dismax&fl=*%2Cscore&mm=70%25&pf=name&ps=1&qf=name_code%20&q=Peusek%20Arcandol%20spray</a>
+			<a href="http://52.209.195.0:8984/solr/product_name_code_v2/select?defType=dismax&fl=*%2Cscore&mm=70%25&pf=name&ps=1&q=Peusek%20Arcandol%20spray&qf=name_code&wt=json" target="_blank">http://52.209.195.0:8984/solr/product_name_code_v2/select?defType=dismax&fl=*%2Cscore&mm=70%25&pf=name&ps=1&q=Peusek%20Arcandol%20spray&qf=name_code&wt=json</a>
 			<?php settings_errors(); ?>
 
 			<form method="post" action="options.php">
