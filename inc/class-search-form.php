@@ -101,7 +101,6 @@ class SOLOSOE_SEARCH_FORM {
 			        <input id="solr-typeahead" type="search" class="search-field" placeholder="Start type product name"/>
 		        </div>
 	        </form>
-            <?php echo '<a href="'.self::get_solr_url().'" target="_blank">Solr link>>></a>'; ?>
         </div>
 
     <?php 

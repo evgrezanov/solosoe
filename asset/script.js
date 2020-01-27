@@ -8,13 +8,15 @@ jQuery( document ).ready( function( $ ) {
     }
 
     // transform solr search result
-    var transform_products = function( products ) {
+    var transform_products = function( data ) {
+        var docs = JSON.stringify(data.response.docs);
+        var products = JSON.parse(docs);    
         return $.map( products, function( product ) {
             return {
-                id: product.response.docs.id,
-                name_code: product.response.docs.name_code,
-                prd_id: product.response.docs.prd_id,
-                score: product.response.docs.score
+                id: product.id,
+                name_code: product.name_code,
+                prd_id: product.prd_id,
+                score: product.score
             };
         } );
     };
@@ -25,7 +27,7 @@ jQuery( document ).ready( function( $ ) {
         {
             name: 'products',
             source: new Bloodhound( {
-                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name_code'),
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace([ 'name_code', 'prd_id' ]),
                 queryTokenizer: Bloodhound.tokenizers.whitespace,
                 identify: function( product ) {
                     return product.id;
@@ -45,20 +47,26 @@ jQuery( document ).ready( function( $ ) {
                         console.log(settings.url);
                         return settings;
                     },
-                    transform: function (data) {
+                    /*transform: function (data) {
                         var docs = JSON.stringify(data.response.docs);
                         var jsonData = JSON.parse(docs);        
                         var newData = [];               
                         jsonData.forEach(function (item) {
-                            newData.push({'name': item.name_code});
+                            newData.push({
+                                'name': item.name_code,
+                                'id': item.id,
+                                'prd_id': item.prd_id,
+                                'score': item.score
+                            });
                         });
-                        console.log(jsonData);
+                        console.log(newData);
                         return newData;
-                    },
+                    },*/
+                    transform: transform_products,
                 },
-                //indexRemote: true
+                indexRemote: true
             } ),
-            //display: name,
+            display: display_product,
         }
     ];
 
@@ -67,14 +75,16 @@ jQuery( document ).ready( function( $ ) {
         minLength: 3,
         highlight: true,
         hint: true,
-        displayKey: 'name',
+        /*displayKey: 'name',
         templates: {
-            empty: [
-                '<div class="noitems">',
-                'No Items Found',
-                '</div>'
-            ].join('\n')
-        }
+            notFound: '<div>Not Found</div>',
+            pending: '<div>Loading...</div>',
+            header: '<div>Found Records:</div>',
+            suggestion:  function(data) {
+                return '<div>'+ product.name +'</div>'
+            },
+            footer: '<div>Footer Content</div>'
+        }*/
     }, datasets);
 
 } );
