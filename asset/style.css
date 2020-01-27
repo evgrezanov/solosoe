@@ -1,0 +1,12 @@
+.tt-dataset-products{
+    width: 500px;
+    background-color: aliceblue;
+    border-radius: 0 0 6px 6px;
+    display: block;
+}
+
+#solosoe-custom-templates .empty-message {
+    padding: 5px 10px;
+    text-align: center;
+}
+  

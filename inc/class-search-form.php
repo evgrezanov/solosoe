@@ -55,6 +55,8 @@ class SOLOSOE_SEARCH_FORM {
             $ver = '1.7',
             true
           );
+
+          wp_enqueue_style('solosoe_style', SOLOSOE_URL . 'asset/style.css');
     }
 
     /**
@@ -95,10 +97,10 @@ class SOLOSOE_SEARCH_FORM {
     public static function solr_search_form(){
         ob_start();    
         ?> 
-        <div class="container p-3">
+        <div id="solosoe-custom-templates" class="container p-3">
 	        <form>
 		        <div class="form-group">
-			        <input id="solr-typeahead" type="search" class="search-field" placeholder="Start type product name"/>
+			        <input id="solr-typeahead" type="search" style="width:500px;" class="search-field" placeholder="Start type product name"/>
 		        </div>
 	        </form>
         </div>

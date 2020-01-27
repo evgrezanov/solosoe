@@ -22,7 +22,6 @@ jQuery( document ).ready( function( $ ) {
     };
 
     // Bloodhound configuration 
-    // https://github.com/twitter/typeahead.js/blob/master/doc/bloodhound.md
     var datasets = [
         {
             name: 'products',
@@ -47,21 +46,6 @@ jQuery( document ).ready( function( $ ) {
                         console.log(settings.url);
                         return settings;
                     },
-                    /*transform: function (data) {
-                        var docs = JSON.stringify(data.response.docs);
-                        var jsonData = JSON.parse(docs);        
-                        var newData = [];               
-                        jsonData.forEach(function (item) {
-                            newData.push({
-                                'name': item.name_code,
-                                'id': item.id,
-                                'prd_id': item.prd_id,
-                                'score': item.score
-                            });
-                        });
-                        console.log(newData);
-                        return newData;
-                    },*/
                     transform: transform_products,
                 },
                 indexRemote: true
@@ -75,16 +59,16 @@ jQuery( document ).ready( function( $ ) {
         minLength: 3,
         highlight: true,
         hint: true,
-        /*displayKey: 'name',
         templates: {
-            notFound: '<div>Not Found</div>',
-            pending: '<div>Loading...</div>',
-            header: '<div>Found Records:</div>',
-            suggestion:  function(data) {
-                return '<div>'+ product.name +'</div>'
-            },
-            footer: '<div>Footer Content</div>'
-        }*/
+            empty: [
+              '<div class="empty-message">',
+                'unable to find any products that match the current query',
+              '</div>'
+            ].join('\n'),
+            suggestion: function (data) {
+                return '<p><strong>' + product.name_code + '</strong> - ' + product.prd_id + '</p>';
+            }
+        }
     }, datasets);
 
 } );
