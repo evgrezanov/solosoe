@@ -9,7 +9,6 @@ jQuery( document ).ready( function( $ ) {
 
     // transform solr search result
     var transform_products = function( products ) {
-        console.log(products);
         return $.map( products, function( product ) {
             return {
                 id: product.response.docs.id,
@@ -33,33 +32,33 @@ jQuery( document ).ready( function( $ ) {
                 },
                 sufficient: 1,
                 remote: {
-                    url: 'http://52.209.195.0:8984/solr/product_name_code_v2/select?defType=dismax&fl=*%2Cscore&mm=70%25&pf=name&ps=1&qf=name_code&q=%QUERY&wt=json',
+                    url: 'http://52.209.195.0:8984/solr/product_name_code_v2/select?defType=dismax&fl=*%2Cscore&mm=70%25&pf=name&ps=1&qf=name_code&q=%QUERY',
                     wildcard: '%QUERY',
-                    //transform: transform_products,
                     prepare: function(query, settings) {
                         settings.beforeSend = function(jqXHR, settings) {
                             settings.xhrFields = { withCredentials: true };
                         };
                         settings.crossDomain = true;
                         settings.dataType = "jsonp";
+                        settings.jsonp = 'json.wrf';
                         settings.url = settings.url.replace('%QUERY', query);
-                        //console.log(settings);
+                        console.log(settings.url);
                         return settings;
                     },
-                    transform: function (data) { 
-                        //response = data.response.docs;
-                        response = JSON.stringify(data.response.docs);         
+                    transform: function (data) {
+                        var docs = JSON.stringify(data.response.docs);
+                        var jsonData = JSON.parse(docs);        
                         var newData = [];               
-                        data.forEach(function (item) {
-                            newData.push({'name': item});
+                        jsonData.forEach(function (item) {
+                            newData.push({'name': item.name_code});
                         });
-                        console.log(newData);
-                        return response;
-                    }
+                        console.log(jsonData);
+                        return newData;
+                    },
                 },
                 //indexRemote: true
             } ),
-            display: display_product
+            //display: name,
         }
     ];
 
@@ -68,7 +67,7 @@ jQuery( document ).ready( function( $ ) {
         minLength: 3,
         highlight: true,
         hint: true,
-        displayKey: 'name_code',
+        displayKey: 'name',
         templates: {
             empty: [
                 '<div class="noitems">',
