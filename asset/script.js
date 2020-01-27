@@ -10,7 +10,8 @@ jQuery( document ).ready( function( $ ) {
     // transform solr search result
     var transform_products = function( data ) {
         var docs = JSON.stringify(data.response.docs);
-        var products = JSON.parse(docs);    
+        var products = JSON.parse(docs);
+        console.log(products);
         return $.map( products, function( product ) {
             return {
                 id: product.id,
@@ -50,6 +51,7 @@ jQuery( document ).ready( function( $ ) {
                 },
                 indexRemote: true
             } ),
+            limit: 8,
             display: display_product,
         }
     ];
