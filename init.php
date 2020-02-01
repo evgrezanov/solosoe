@@ -36,6 +36,7 @@ class SOLOSOE {
         //add_action( 'wp', [__CLASS__, 'members_only'] );
         require_once('inc/class-options.php');
         require_once('inc/class-search-form.php');
+        require_once('inc/class-display-product.php');
     }
 
     // Redirect users who arent logged in...

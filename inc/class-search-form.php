@@ -37,26 +37,29 @@ class SOLOSOE_SEARCH_FORM {
         
         $arg_array = [
             'solr_url'  =>  self::get_solr_url(),
+            'site_url'  =>  get_site_url().'/solosoe-search/?prd_id=',
         ];
 
         wp_register_script(
             'solosoe_script',
             plugins_url('solosoe/asset/script.js')
-          );
-          wp_localize_script(
+        );
+        
+        wp_localize_script(
             'solosoe_script',
             'solrUrl',
             $arg_array
-          );
-          wp_enqueue_script(
+        );
+
+        wp_enqueue_script(
             'solosoe_script',
             plugins_url('solosoe/asset/script.js'),
             ['jquery', 'typeahead'],
-            $ver = '1.7',
+            $ver = '1.8',
             true
-          );
+        );
 
-          wp_enqueue_style('solosoe_style', SOLOSOE_URL . 'asset/style.css');
+        wp_enqueue_style('solosoe_style', SOLOSOE_URL . 'asset/style.css');
     }
 
     /**

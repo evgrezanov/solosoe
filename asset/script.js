@@ -1,10 +1,12 @@
 jQuery( document ).ready( function( $ ) {
     // url for request Solr
-    var solrUrl = window['solrUrl'];
+    var solosoeParams = window['solrUrl'];
+    solrUrl = solosoeParams['solr_url'];
+    siteUrl = solosoeParams['site_url'];
 
     // return name_code from solr
     var display_product = function( product ) {
-        return product.name_code;
+        return product.name_code+'['+product.prd_id+']';
     }
 
     // transform solr search result
@@ -17,7 +19,8 @@ jQuery( document ).ready( function( $ ) {
                 id: product.id,
                 name_code: product.name_code,
                 prd_id: product.prd_id,
-                score: product.score
+                score: product.score,
+                prod_url: siteUrl + product.prd_id,
             };
         } );
     };
@@ -51,11 +54,11 @@ jQuery( document ).ready( function( $ ) {
                 },
                 indexRemote: true
             } ),
-            limit: 8,
+            limit: 10,
             display: display_product,
         }
     ];
-
+    
     // init typeahead
     $( '#solr-typeahead' ).typeahead( {
         minLength: 3,
@@ -68,9 +71,15 @@ jQuery( document ).ready( function( $ ) {
               '</div>'
             ].join('\n'),
             suggestion: function (data) {
-                return '<p><strong>' + product.name_code + '</strong> - ' + product.prd_id + '</p>';
+                return '<p class="sugsoloseo"><strong>' + product.name_code + '</strong> - ' + product.prd_id + '</p>';
             }
         }
     }, datasets);
+
+    // redirect to product page
+    $('#solr-typeahead').bind('typeahead:select', function(ev, suggestion) {
+        console.log('Selection: ' + suggestion.prod_url);
+        window.location.href = suggestion.prod_url;
+    });
 
 } );
