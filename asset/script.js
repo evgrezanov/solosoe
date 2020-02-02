@@ -6,7 +6,7 @@ jQuery( document ).ready( function( $ ) {
 
     // return name_code from solr
     var display_product = function( product ) {
-        return product.name_code+'['+product.prd_id+']';
+        return product.name_code;
     }
 
     // transform solr search result
@@ -54,7 +54,7 @@ jQuery( document ).ready( function( $ ) {
                 },
                 indexRemote: true
             } ),
-            limit: 10,
+            limit: 5,
             display: display_product,
         }
     ];
@@ -71,7 +71,7 @@ jQuery( document ).ready( function( $ ) {
               '</div>'
             ].join('\n'),
             suggestion: function (data) {
-                return '<p class="sugsoloseo"><strong>' + product.name_code + '</strong> - ' + product.prd_id + '</p>';
+                return '<p><strong>' + product.name_code + '</strong></p>';
             }
         }
     }, datasets);
