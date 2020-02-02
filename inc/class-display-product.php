@@ -51,8 +51,9 @@ class SOLOSOE_DISPLAY_PRODUCT {
                 $product_info = self::get_product_info($product_id, $prd_info_url);
                 $product_price = self::get_product_price($product_id, $prd_price_url);
                 
-                echo self::display_product_details($product_id, $product_info, $product_price);
-                echo self::display_product_details2();
+                //echo self::display_product_details($product_id, $product_info, $product_price);
+                //echo self::display_product_details2();
+                echo self::display_product_card($product_id, $product_info, $product_price);
             endif;
 
         endif;    
@@ -117,19 +118,73 @@ class SOLOSOE_DISPLAY_PRODUCT {
     }
     
 
-    public static function display_shops($master_details){
-      foreach ($master_details as $details):
-        ?>
-        <ul>
-            <li><?php echo $details->marketplace;?></li>
-            <li><?php echo $details->no_of_shops;?></li>
-            <li><?php echo $details->min_price;?></li>
-            <li><?php echo $details->max_price;?></li>
-        </ul>
-        <?php
-      endforeach;
+    public static function display_shops($master_details){ ?>
+    <div class='list-bottom'>
+    <?php foreach ($master_details as $details): ?>
+            <div class='list-bottom-section'>
+                <span><?php echo $details->marketplace;?></span>
+                <span class="badge badge-success"><?php echo $details->no_of_shops;?></span>
+                <span><?php echo $details->min_price . ' - ' . $details->max_price;?></span>
+            </div>
+    <?php endforeach; ?> 
+        </div>
+      <?php
     }
 
+    public static function display_product_card($product_id, $product_info, $product_price){
+    $master_details = $product_info->master_details;
+    ob_start();
+    ?>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                    <div class="col-auto d-none d-lg-block">
+                        <img src="<?php echo $product_info->images[0]; ?>" class="card-img" alt="<?php echo $product_info->product_name; ?>">
+                    </div>
+                    <div class="col p-4 d-flex flex-column position-static">
+                        <strong class="d-inline-block mb-2 text-primary"><?php echo '#'.$product_id; ?></strong>
+                        
+                        <h3 class="mb-0"><?php echo $product_info->product_name; ?></h3>
+                        
+                        <h4>Precio Competitevo <span class="badge badge-warning"><?php echo $product_price->price; ?> &#8364;</span></h4>
+                        
+                        <div class="mb-1 text-muted">
+                            <?php echo $product_info->ean; ?>
+                        </div>
+                        
+                        <ul class="list-group list-group-flush">
+                            <?php if (isset($product_info->min_sale_price) && isset($product_info->max_sale_price)): ?>
+                                <li class="list-group-item">Rango de precios: <?php echo $product_info->min_sale_price.' - '.$product_info->max_sale_price; ?> &#8364; </li>
+                            <?php endif; ?>
+
+                            <?php if (isset($product_info->mst_prd_id)): ?>
+                                <li class="list-group-item">№ de Comercios: <?php echo $product_info->mst_prd_id; ?></li>
+                            <?php endif; ?> 
+
+                            <?php if (isset($product_info->no_of_shops)): ?>
+                                <li class="list-group-item">no_of_shops: <?php echo $product_info->no_of_shops; ?></li>
+                            <?php endif; ?>    
+                        </ul>
+                        
+                        <div class="card-text">
+                            <?php if (!empty($master_details)): self::display_shops($master_details); endif; ?>
+                        </div>
+                        
+                            <!--<a href="#" class="stretched-link">Continue reading</a>-->
+                    </div>
+                    <div class="card-footer">
+                        <p class="card-text mb-auto">
+                            <?php echo $product_info->product_description; ?>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php
+        return ob_get_clean();
+    }
    /**
     *   Display product detail with id > 6
     *   https://cima.aemps.es/cima/rest/medicamento?cn={{product_id}}
