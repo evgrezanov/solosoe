@@ -38,6 +38,7 @@ class SOLOSOE_DISPLAY_PRODUCT {
             // check id and chose corret link
             $id_start = (int)substr($product_id, 0, 1);
             
+            //to do >= or > ????????????
             if ($id_start >= 6):
                 $prd_info_url = 'https://cima.aemps.es/cima/rest/medicamento?cn='.$product_id;
                 $prd_price_url = 'https://cima.aemps.es/cima/rest/psuministro/'.$product_id;
@@ -48,12 +49,39 @@ class SOLOSOE_DISPLAY_PRODUCT {
 
             // get product data
             if ( !empty($prd_price_url) && !empty($prd_info_url) ):
-                $product_info = json_decode(file_get_contents($prd_info_url));
-                $product_price = json_decode(file_get_contents($prd_price_url));
+                
+                $info = file_get_contents($prd_info_url);
+                if ($info['reponse_code'] != 200):
+                    echo self::display_no_result($http_response_header);
+                    die();
+                endif;
+
+                
+                $price = file_get_contents($prd_price_url);
+                if ($price['reponse_code'] != 200):
+                    echo self::display_no_result($http_response_header);
+                    die();
+                endif;
+
+                $product_info = json_decode($info);
+                $product_price = json_decode($price);
+                
                 echo self::display_product_card($product_id, $product_info, $product_price);
             endif;
 
         endif;    
+    }
+   
+    /**
+    * display no-results message
+    */    
+    public static function display_no_result($http_response_header){
+        ?>
+        <div class="alert alert-danger" role="alert">
+            <strong>We are so sorry, something wrong!</strong> <br>
+            <?php print_r(self::parseHeaders($http_response_header)); ?>
+        </div>
+        <?php
     }
 
    /**
@@ -90,9 +118,6 @@ class SOLOSOE_DISPLAY_PRODUCT {
             <div class="row">
                 <div class="col-12">
                     <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-                        <div class="card-header">
-                            <?php echo $product_info->product_description; ?>
-                        </div>
                         
                         <div class="col-auto d-none d-lg-block">
                             <!--img-->
@@ -148,6 +173,23 @@ class SOLOSOE_DISPLAY_PRODUCT {
         <?php
         return ob_get_clean();
     }
+
+    public static function parseHeaders($headers){
+        $head = array();
+        foreach( $headers as $k=>$v ){
+            $t = explode( ':', $v, 2 );
+            if( isset( $t[1] ) )
+                $head[ trim($t[0]) ] = trim( $t[1] );
+            else
+            {
+                $head[] = $v;
+                if( preg_match( "#HTTP/[0-9\.]+\s+([0-9]+)#",$v, $out ) )
+                    $head['reponse_code'] = intval($out[1]);
+            }
+        }
+        return $head;
+    }
+
 
 
 }
