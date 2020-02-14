@@ -33,6 +33,7 @@ class SOLOSOE_SEARCH_FORM {
      * Enqueue scripts.
      */
     public static function assets(){
+        
         wp_enqueue_script( 'typeahead', SOLOSOE_URL . 'asset/lib/typeahead/typeahead.bundle.js', array(), '1.0.0' );
         
         $arg_array = [
@@ -60,12 +61,14 @@ class SOLOSOE_SEARCH_FORM {
         );
 
         wp_enqueue_style('solosoe_style', SOLOSOE_URL . 'asset/style.css');
+        wp_enqueue_style('bootstrap', SOLOSOE_URL . 'asset/lib/bootstrap/css/bootstrap.min.css');
     }
 
     /**
      * Get Solr url from option
      */
     public static function get_solr_url(){
+        // to do delete all parameters - store it at 1 field
         $desired_query = '%QUERY';
         if ($frm_base_options = get_option('solrurl_param')):
             $url  = 'http://' . $frm_base_options['ip_0'] . ':' . $frm_base_options['port_1'];

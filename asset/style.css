@@ -1,3 +1,4 @@
+/* search form style begin */
 .tt-dataset-products{
     width: 500px;
     background-color: aliceblue;
@@ -51,3 +52,27 @@
 .tt-suggestion p {
     margin: 0;
 }
+/* search form style end */
+
+
+/* product card styles begin */
+.card-block {
+    font-size: 1em;
+    position: relative;
+    margin: 0;
+    padding: 1em;
+    border: none;
+    border-top: 1px solid rgba(34, 36, 38, .1);
+    box-shadow: none;
+     
+}
+.card {
+    font-size: 1em;
+    overflow: hidden;
+    padding: 5;
+    border: none;
+    border-radius: .28571429rem;
+    box-shadow: 0 1px 3px 0 #d4d4d5, 0 0 0 1px #d4d4d5;
+    margin-top:20px;
+}
+/* product card styles end */
