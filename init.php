@@ -6,10 +6,12 @@
  * Author:      Evgeniy Rezanov
  * Author URI:  https://www.upwork.com/freelancers/~01ea58721977099d53
  * Version:     1.2.0
+ * GitHub Plugin URI: evgrezanov/solosoe
  *
- * @copyright  Copyright (c) 2019
+ * @copyright  Copyright (c) 2020
  */
 
+ 
 //https://codepen.io/redmonkey73/pen/rNaNKGB
 //https://www.pronamic.nl/2018/10/twitter-typeahead-js-en-de-wordpress-rest-api/
 //https://www.kiesuwcursus.nl/
