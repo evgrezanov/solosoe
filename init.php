@@ -29,7 +29,7 @@ define( 'SOLOSOE_URL', plugin_dir_url( __FILE__ ) );
  */
 class SOLOSOE {
 
-    /**
+   /**
     * The init
     */
     public static function init(){
