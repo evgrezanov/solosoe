@@ -41,16 +41,28 @@ class SOLOSOE_DISPLAY_PRODUCT {
                     // get current product id 
                     $product_id = $_REQUEST['prd_id'];
                     
-                    //todo change - store urls at DB
+                    //todo change - store urls at DB as plugin options
                     $prd_info_url = 'http://34.243.79.103:8000/services/product/'.$product_id.'/?format=json';
                     $prd_price_url = 'http://34.243.79.103:8000/services/optimal-price/'.$product_id.'/?format=json';
 
                     // get product data
                     if ( !empty($prd_price_url) && !empty($prd_info_url) ):
+                        
+                        // for that https://www.php.net/manual/en/migration56.openssl.php
+                        $arrContextOptions = array(
+                            "ssl"=>array(
+                                "verify_peer"=>false,
+                                "verify_peer_name"=>false,
+                            ),
+                        ); 
+
                         // get properties
-                        $info = file_get_contents($prd_info_url);
+                        $info = file_get_contents($prd_info_url, false, stream_context_create($arrContextOptions));
+                        
                         // get price
-                        $price = file_get_contents($prd_price_url);
+                        //var_dump($prd_price_url);
+                        $price = file_get_contents($prd_price_url, false, stream_context_create($arrContextOptions));
+                        
                         // decode
                         $product_info = json_decode($info);
                         $product_price = json_decode($price);
@@ -60,6 +72,7 @@ class SOLOSOE_DISPLAY_PRODUCT {
                         // check - have cima info?
                         if (isset($product_info->cn_dot_7)):
                             $id_start = (int)substr($product_info->cn_dot_7, 0, 1);
+                            
                             // if id_start >= 6 cima have info
                             if ($id_start >= 6):
                                 
@@ -69,18 +82,23 @@ class SOLOSOE_DISPLAY_PRODUCT {
                             // todo delete later    
                             else:
 
-                                // just for test
-                                $cima_id = 912485;
+                                // JUST FOR TEST
+                                $cima_id = '912485';
 
                             endif;
 
                             // request data from cima
-                            $cima_medicamento = json_decode(file_get_contents('https://cima.aemps.es/cima/rest/medicamento?cn='.$cima_id));
-                            $cima_psuministro = json_decode(file_get_contents('https://cima.aemps.es/cima/rest/psuministro/'.$cima_id));
+                            //var_dump('https://cima.aemps.es/cima/rest/medicamento?cn='.$cima_id);
+
+
+                            $cima_medicamento_json = file_get_contents('https://cima.aemps.es/cima/rest/medicamento?cn='.$cima_id, false, stream_context_create($arrContextOptions));
+                            //var_dump($cima_medicamento_json);
                             
+                            $cima_psuministro = file_get_contents('https://cima.aemps.es/cima/rest/psuministro/'.$cima_id, false, stream_context_create($arrContextOptions));
+                            //var_dump($cima_psuministro);
                             // display cima data
-                            echo self::display_cima_psuministro_data($cima_psuministro);
-                            echo self::display_cima_medicamento_data($cima_medicamento);
+                            echo self::display_cima_psuministro_data(json_decode($cima_psuministro));
+                            echo self::display_cima_medicamento_data(json_decode($cima_medicamento));
 
                         endif;
 
@@ -93,6 +111,51 @@ class SOLOSOE_DISPLAY_PRODUCT {
         return ob_get_clean(); 
     }
    
+    //  Display carousel products images
+    public static function display_products_imgs($images){
+        $img_count = count($images);
+        ob_start();
+        ?>
+        <div class="col-md-5">
+            <div id="CarouselSolosoe" class="carousel slide" data-ride="carousel">
+                <?php 
+                   // if ($img_count > 1): 
+                ?>
+                        <ol class="carousel-indicators">
+                            <?php
+                            foreach ($images as $key=>$value): ?>
+                                <li data-target="#CarouselSolosoe" data-slide-to="<?= $key; ?>"></li>
+                            <?php    
+                            endforeach;
+                            ?>
+                        </ol>  
+                        <div class="carousel-inner">
+                            <?php      
+                            foreach ($images as $key=>$value): ?>
+                                <div class="carousel-item active">
+                                    <img class="d-block" src="<?=$value; ?>">
+                                </div>
+                            <?php    
+                            endforeach;
+                            ?>
+                        </div>
+                        
+                        <a class="carousel-control-prev" href="#CarouselSolosoe" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#CarouselSolosoe" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                <?php
+                    //endif; 
+                ?>    
+            </div>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
 
     //  Display main product data from http://34.243.79.103:8000/services/product/{{144615}}/
     //  and optimal product price from http://34.243.79.103:8000/services/optimal-price/{144615}/
@@ -101,58 +164,14 @@ class SOLOSOE_DISPLAY_PRODUCT {
         $min_sale_price = $product_info->min_sale_price;
         $max_sale_price = $product_info->max_sale_price;
         $price_average = $min_sale_price .'€ - '.$max_sale_price.' €';
+        $images = $product_info->images;
         ob_start();
         ?>
         <!-- Card Start -->
         <div class="card solosoe-main-product-data">
             <div class="row">
-                
                 <!-- Carousel -->
-                <div class="col-md-5">
-                    <div id="CarouselTest" class="carousel slide" data-ride="carousel">
-                        <ol class="carousel-indicators">
-                            <li data-target="#CarouselTest" data-slide-to="0" class="active"></li>
-                            <li data-target="#CarouselTest" data-slide-to="1"></li>
-                            <li data-target="#CarouselTest" data-slide-to="2"></li>
-                            <li data-target="#CarouselTest" data-slide-to="3"></li>
-                            <li data-target="#CarouselTest" data-slide-to="4"></li>
-                            <li data-target="#CarouselTest" data-slide-to="5"></li>
-                            <li data-target="#CarouselTest" data-slide-to="6"></li>
-                        </ol>
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <img class="d-block" src="http://34.243.79.103:8000/image/?key=15767675.jpg" alt="">
-                            </div>
-                            <div class="carousel-item">
-                                <img class="d-block" src="http://34.243.79.103:8000/image/?key=vitae-kyodophilus-one-per-day-30-caps.jpg" alt="">
-                            </div>
-                            <div class="carousel-item">
-                                <img class="d-block" src="http://34.243.79.103:8000/image/?key=kyo-dophilus-one-per-day-probiotico-30-capsulas.jpg" alt="">
-                            </div>
-                            <div class="carousel-item">
-                                <img class="d-block" src="http://34.243.79.103:8000/image/?key=166717_5.jpg" alt="">
-                            </div>
-                            <div class="carousel-item">
-                                <img class="d-block" src="http://34.243.79.103:8000/image/?key=kyo-dophilus-one-per-day-30-capsulas.jpg" alt="">
-                            </div>
-                            <div class="carousel-item">
-                                <img class="d-block" src="http://34.243.79.103:8000/image/?key=leukomed-8x10cm-5-unidades.df9cee.jpg" alt="">
-                            </div>   
-                            <div class="carousel-item">
-                                <img class="d-block" src="http://34.243.79.103:8000/image/?key=14579342.jpg" alt="">
-                            </div>
-                            <a class="carousel-control-prev" href="#CarouselTest" role="button" data-slide="prev">
-                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                <span class="sr-only">Previous</span>
-                            </a>
-                            <a class="carousel-control-next" href="#CarouselTest" role="button" data-slide="next">
-                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                <span class="sr-only">Next</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                    
+                <?php echo self::display_products_imgs($images); ?>
                 <!-- Product info -->
                 <div class="col-md-7 px-3">
                     <div class="card-block px-6">
@@ -164,12 +183,10 @@ class SOLOSOE_DISPLAY_PRODUCT {
                         <div id="solosoe-recommended-price" class="h1 title badge badge-warning mb-2">Precio Competitevo <?php echo $product_price->price; ?> €</div>
                         <p class="card-text"><?php echo $product_info->product_description; ?></p>    
                     </div>
-
                     <div class="row card-block px-6">
                         <?php if (!empty($master_details)): self::display_shops($master_details); endif; ?>
                     </div>
                 </div>
-        
             </div>    
         </div>
         <?php
@@ -364,8 +381,7 @@ class SOLOSOE_DISPLAY_PRODUCT {
     }
 
     //  Display search form
-    public static function display_solr_search_form(){
-        ob_start();    
+    public static function display_solr_search_form(){   
         ?> 
         <div id="solosoe-custom-templates" class="container p-3">
 	        <form>
@@ -375,7 +391,6 @@ class SOLOSOE_DISPLAY_PRODUCT {
 	        </form>
         </div>
         <?php 
-        return ob_get_clean();
     }
 
     //  Display no-results message
