@@ -36,6 +36,7 @@ class SOLOSOE {
     */
     public static function init(){
         //add_action( 'wp', [__CLASS__, 'members_only'] );
+        //add_filter( 'http_request_host_is_external', [__CLASS__, 'wplr_http_request_host_is_external'] );
         require_once('inc/class-options.php');
         require_once('inc/class-search-form.php');
         require_once('inc/class-display-product.php');
@@ -47,6 +48,11 @@ class SOLOSOE {
         // Check to see if user in not logged in and not on the login page
         if( !is_user_logged_in() && $pagenow != 'wp-login.php' )
           auth_redirect();
+    }
+
+    
+    public static function wplr_http_request_host_is_external(){
+        return true;
     }
 
 }
