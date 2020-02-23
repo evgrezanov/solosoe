@@ -2,11 +2,10 @@
 /**
  * Plugin Name: SoloSOE
  * Plugin URI:  <a href="https://www.upwork.com/freelancers/~01ea58721977099d53">Evgeniy Rezanov</a>
- * Description: Custom plugin for search and display remote pharma products from Solr
+ * Description: Custom plugin for search and display remote pharma products from Solr and cima
  * Author:      Evgeniy Rezanov
  * Author URI:  https://www.upwork.com/freelancers/~01ea58721977099d53
  * Version:     1.2.0
- * GitHub Plugin URI: evgrezanov/solosoe
  *
  * @copyright  Copyright (c) 2020
  */
