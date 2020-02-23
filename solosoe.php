@@ -2,11 +2,10 @@
 /**
  * Plugin Name: SoloSOE
  * Plugin URI:  <a href="https://www.upwork.com/freelancers/~01ea58721977099d53">Evgeniy Rezanov</a>
- * Description: Custom plugin for search and display remote pharma products from Solr
+ * Description: Custom plugin for search and display remote pharma products from Solr and cima
  * Author:      Evgeniy Rezanov
  * Author URI:  https://www.upwork.com/freelancers/~01ea58721977099d53
  * Version:     1.2.0
- * GitHub Plugin URI: evgrezanov/solosoe
  *
  * @copyright  Copyright (c) 2020
  */
@@ -36,7 +35,6 @@ class SOLOSOE {
     */
     public static function init(){
         //add_action( 'wp', [__CLASS__, 'members_only'] );
-        //add_filter( 'http_request_host_is_external', [__CLASS__, 'wplr_http_request_host_is_external'] );
         require_once('inc/class-options.php');
         require_once('inc/class-search-form.php');
         require_once('inc/class-display-product.php');
@@ -50,10 +48,7 @@ class SOLOSOE {
           auth_redirect();
     }
 
-    
-    public static function wplr_http_request_host_is_external(){
-        return true;
-    }
+
 
 }
 
