@@ -5,12 +5,12 @@
  * Description: Custom plugin for search and display remote pharma products from Solr and cima
  * Author:      Evgeniy Rezanov
  * Author URI:  https://www.upwork.com/freelancers/~01ea58721977099d53
- * Version:     1.2.2
+ * Version:     1.5
  *
  * @copyright  Copyright (c) 2020
  */
 
- 
+
 //https://codepen.io/redmonkey73/pen/rNaNKGB
 //https://www.pronamic.nl/2018/10/twitter-typeahead-js-en-de-wordpress-rest-api/
 //https://www.kiesuwcursus.nl/
