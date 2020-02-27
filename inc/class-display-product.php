@@ -10,7 +10,16 @@ defined('ABSPATH') || exit;
  */
 class SOLOSOE_DISPLAY_PRODUCT {
 
-    public static $product = array();
+    public static $product = array(
+        'info'                  => NULL,
+        'info_error'            => NULL,
+        'price'                 => NULL,
+        'price_error'           => NULL,
+        'cima_psuministro'      => NULL,
+        'cima_psuministro_error'=> NULL,
+        'cima_medicamento'      => NULL,
+        'cima_medicamento_error'=> NULL,
+    );
    
    /**
     * Init class
@@ -38,21 +47,26 @@ class SOLOSOE_DISPLAY_PRODUCT {
             if (is_wp_error($product_info)):
                 $product_info_error = $product_info->get_error_message();
                 self::$product['info_error'] = $product_info_error;
+            elseif( wp_remote_retrieve_response_code( $product_info ) == 500 ):
+                self::$product['info_error'] = '500  Internal Server Error';
             elseif( wp_remote_retrieve_response_code( $product_info ) === 200 ):
-                self::$product['info'] = $info = wp_remote_retrieve_body( $product_info );
+                $info = self::$product['info'] = wp_remote_retrieve_body( $product_info );
             endif;
 
             $product_price = wp_remote_get($prd_price_url);
             if (is_wp_error($product_price)):
                $product_price_error = $product_price->get_error_message();
                self::$product['price_error'] = $product_price_error;
+            elseif( wp_remote_retrieve_response_code( $product_price ) == 500 ):
+                self::$product['price_error'] = '500  Internal Server Error';
             elseif( wp_remote_retrieve_response_code( $product_price ) === 200 ):
-                self::$product['price'] = $price = wp_remote_retrieve_body( $product_info );
+                self::$product['price']  = wp_remote_retrieve_body( $product_price );
             endif;
                 
             $info = json_decode($info);
             
             $cn_dot_7 = $info->cn_dot_7;
+            var_dump($cn_dot_7);
             $cn_dot_1_7 = substr($cn_dot_7, 0, 1);
             //if ( !is_null($cn_dot_7) && $cn_dot_1_7 > 6):
             if ( !is_null($cn_dot_7)):
@@ -85,17 +99,17 @@ class SOLOSOE_DISPLAY_PRODUCT {
             endif;
             
             return self::$product;
-
         endif;
     }
 
     //  Shortcode for display product
     public static function render_product_card(){
         $prod_data = self::get_data();
+        //var_dump($prod_data);
         $info = json_decode($prod_data['info']);
         ob_start();
         ?>
-        <div id="solosoe-custom-templates" class="container-fluid">
+        <div id="solosoe-custom-templates" class="container">
             
             <!-- Search form-->
             <?php echo self::display_solr_search_form(); ?>
@@ -120,6 +134,7 @@ class SOLOSOE_DISPLAY_PRODUCT {
                             echo self::display_cima_psuministro_data($info, $resultados[0]);
                         else:
                             echo self::display_product_price($info, $prod_data['price'], $info->master_details);
+                            //var_dump($info);
                         endif;
                        ?>
                     </div>
@@ -158,24 +173,24 @@ class SOLOSOE_DISPLAY_PRODUCT {
         ?>
         <!-- Product psuministro data from cima -->
         <div class="card solosoe-cima-medicamento-product-data">
-            <div class="row">
+            <div class="row px-3 py-3">
                 <div class="col-md-3">
-                    <span><?php echo $formaFarmaceutica->nombre; ?></span>
+                    <span class="blue"><?php echo $formaFarmaceutica->nombre; ?></span>
                     <br>
                     <small class="solosoe-cima-label"><strong>FORMAS FARMACÉUTICAS</strong></small>
                 </div>
                 <div class="col-md-3">
-                    <span><?php echo $medicamento->dosis; ?></span>
+                    <span class="blue"><?php echo $medicamento->dosis; ?></span>
                     <br>
                     <small class="solosoe-cima-label"><strong>DOSIS</strong></small>
                 </div>
                 <div class="col-md-3">
-                    <span><?php echo $viasAdministracion[0]->nombre; ?></span>
+                    <span class="blue"><?php echo $viasAdministracion[0]->nombre; ?></span>
                     <br>
                     <small class="solosoe-cima-label"><strong>VÍAS DE ADMINISTRACIÓN</strong></small>
                 </div>
                 <div class="col-md-3">
-                    <small class="solosoe-cima-label"><strong>LABORATORIO:</strong> <?php echo $medicamento->labtitular; ?></small>
+					<small class="solosoe-cima-label"><strong>LABORATORIO:</strong> <span class="blue"><?php echo $medicamento->labtitular; ?></span></small>
                     <br>
                     <?php 
                         if ($docs): 
@@ -183,13 +198,13 @@ class SOLOSOE_DISPLAY_PRODUCT {
                             <ul class="list-group list-group-flush solosoe-laboratorio-docs-links">
                             <?php
                             foreach ($docs as $doc):
-                                $pdf_logo_url = SOLOSOE_URL . '/asset/img/i_pdf.png';
-                                $html_logo_url = SOLOSOE_URL . '/asset/img/i_html.png';
+                                $pdf_logo_url = SOLOSOE_URL . '/asset/img/pdf.svg';
+                                $html_logo_url = SOLOSOE_URL . '/asset/img/doc-file.svg';
                             ?>    
                                 <li class="list-group-item">
                                     <div>
-                                        <a href="<?= $doc->url; ?>" target="_blank"><img src="<?= $pdf_logo_url; ?>" width="30" height="30"></a> 
-                                        <a href="<?= $doc->urlHtml; ?>" target="_blank"><img src="<?= $html_logo_url; ?>" width="30" height="30"></a>
+                                        <a href="<?= $doc->url; ?>" target="_blank"><img src="<?= $pdf_logo_url; ?>" width="40" height="40"></a> 
+                                        <a href="<?= $doc->urlHtml; ?>" target="_blank"><img src="<?= $html_logo_url; ?>" width="40" height="40"></a>
                                     </div>
                                 </li>
                             <?php    
@@ -203,8 +218,8 @@ class SOLOSOE_DISPLAY_PRODUCT {
             </div>
         </div>
         
-        <div class="card solosoe-cima-medicamento-product-data">
-            <div class="row">
+        <div class="card solosoe-cima-medicamento-product-data blue">
+            <div class="row px-3 py-3">
                 
                 <div class="col-md-4">
                     <?php if ($principiosActivos): ?>
@@ -251,7 +266,7 @@ class SOLOSOE_DISPLAY_PRODUCT {
     public static function display_cima_medicamento_data_footer($medicamento){
     ?>
         <div class="card solosoe-cima-medicamento-product-footer-data">
-            <div class="row">
+            <div class="row justify-content-around">
                 <div class="card bg-light xs-2">
                     <div class="card-body">
                         <h5 class="card-title">
@@ -382,7 +397,7 @@ class SOLOSOE_DISPLAY_PRODUCT {
         <div id="solosoe-custom-templates" class="container p-3">
 	        <form>
 		        <div class="form-group">
-			        <input id="solr-typeahead" type="search" style="width:500px;" class="search-field" placeholder="Start type product name"/>
+			        <input id="solr-typeahead" type="search" class="search-field" placeholder="Start type product name"/>
 		        </div>
 	        </form>
         </div>
@@ -392,7 +407,7 @@ class SOLOSOE_DISPLAY_PRODUCT {
     //  Display cima product data from  https://cima.aemps.es/cima/rest/psuministro/912485
     public static function display_cima_psuministro_data($product_info, $resultados){
         ?>
-        <h4 class="card-title">
+        <h4 class="card-title pt-3 pb-3 greenbg">
             <small class="text-muted"><?php echo $resultados->cn; ?></small>  
             <?php echo $resultados->nombre; ?>
         </h4>
@@ -403,26 +418,26 @@ class SOLOSOE_DISPLAY_PRODUCT {
                     <div class="col-md-3">
                         <span><?php echo(date("Y-m-d h:i:sa",$resultados->fini)); ?></span>
                         <br>
-                        <small class="solosoe-cima-label"><strong>PREVISIÓN DE INICIO</strong></small>
+                        <small class="solosoe-cima-label zagsm"><strong>PREVISIÓN DE INICIO</strong></small>
                     </div>
                     <div class="col-md-3">
                         <span><?php echo(date("Y-m-d h:i:sa",$resultados->ffin)); ?></span>
                         <br>
-                        <small class="solosoe-cima-label"><strong>PREVISIÓN DE FINALIZACIÓN</strong></small>
+                        <small class="solosoe-cima-label zagsm"><strong>PREVISIÓN DE FINALIZACIÓN</strong></small>
                     </div>
                     <div class="col-md-6">
                         <h3 class="solosoe-psuministro-error">Problema de Suministro</h3>
                     </div>
                 </div>
             </div> 
-            <p class="card-text"><?php echo $resultados->observ; ?></p>    
+            <p class="card-text pl-3"><?php echo $resultados->observ; ?></p>    
         </div>
    
         <?php
     }
 
     public static function display_product_price($product_info, $product_price, $master_details){
-        //ob_start();
+        $product_price = json_decode($product_price);
         ?>
         <div class="card-block px-6">
             <h4 class="card-title">
@@ -433,7 +448,7 @@ class SOLOSOE_DISPLAY_PRODUCT {
                 <small class="solosoe-pr-comercios text-muted">№ de Comercios: </small> <strong><?php echo $product_info->mst_prd_id ?></strong>
                 <small class="solosoe-pr-rango-precios text-muted">Rango de precios: </small> <strong><?php echo $product_info->min_sale_price; ?> - <?php echo $product_info->max_sale_price; ?> €</strong>
             </h5>
-            <div id="solosoe-recommended-price" class="h1 title badge badge-warning mb-2">Precio Competitevo <?php echo $product_price->price; ?> €</div>
+            <div id="solosoe-recommended-price" class="h1 title badge badge-warning mb-2">Precio Competitevo <span class="solosoe-optimal-price-big"><?php echo $product_price->price; ?> €</span></div>
             <p class="card-text"><?php echo $product_info->product_description; ?></p>    
         </div>
         <div class="row card-block px-6">
@@ -450,7 +465,6 @@ class SOLOSOE_DISPLAY_PRODUCT {
             ?>
         </div>       
     <?php
-        //return ob_get_clean();
     }
     
     //  Help function for display avalible shops
