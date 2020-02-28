@@ -39,9 +39,9 @@ class SOLOSOE_DISPLAY_PRODUCT {
             // get current product id 
             $product_id = $_REQUEST['prd_id'];
             
-            //todo change - store urls at DB as plugin options .'/?format=json'
-            $prd_info_url = 'http://34.243.79.103:8000/services/product/'.$product_id.'/?format=json';
-            $prd_price_url = 'http://34.243.79.103:8000/services/optimal-price/'.$product_id.'/?format=json';
+            //todo change - store urls at DB as plugin options without .'/?format=json'
+            $prd_info_url = 'http://34.243.79.103:8000/services/product/'.$product_id;
+            $prd_price_url = 'http://34.243.79.103:8000/services/optimal-price/'.$product_id;
 
             $product_info = wp_remote_get($prd_info_url);
             if (is_wp_error($product_info)):
@@ -152,6 +152,7 @@ class SOLOSOE_DISPLAY_PRODUCT {
                 </div>  
                 <?php endif; ?>  
             </div>         
+        
         </div>
         <?php
         return ob_get_clean(); 
