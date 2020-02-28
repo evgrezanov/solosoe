@@ -65,16 +65,15 @@ class SOLOSOE_DISPLAY_PRODUCT {
                 
             $info = json_decode($info);
             
-            $cn_dot_7 = $info->cn_dot_7;
-            var_dump($cn_dot_7);
+            $cn_dot_7 = round($info->cn_dot_7,0);
             $cn_dot_1_7 = substr($cn_dot_7, 0, 1);
-            //if ( !is_null($cn_dot_7) && $cn_dot_1_7 > 6):
-            if ( !is_null($cn_dot_7)):
+            if ( !is_null($cn_dot_7) && $cn_dot_1_7 > 6):
+            //if ( !is_null($cn_dot_7)):
                 $cn_dot_7_tmp = $info->cn_dot_7;
-                $str = strpos($cn_dot_7_tmp, ".");
-                $cima_id = substr($cn_dot_7_tmp, 0, $str);
                 // test data
-                $cima_id = 912485;
+                //$cima_id = 912485;
+                //$cima_id = '009258';
+                $cima_id = $cn_dot_7;
 
 
                 $cima_psuministro_url = 'https://cima.aemps.es/cima/rest/psuministro/'.$cima_id;
@@ -105,7 +104,6 @@ class SOLOSOE_DISPLAY_PRODUCT {
     //  Shortcode for display product
     public static function render_product_card(){
         $prod_data = self::get_data();
-        //var_dump($prod_data);
         $info = json_decode($prod_data['info']);
         ob_start();
         ?>
@@ -134,7 +132,6 @@ class SOLOSOE_DISPLAY_PRODUCT {
                             echo self::display_cima_psuministro_data($info, $resultados[0]);
                         else:
                             echo self::display_product_price($info, $prod_data['price'], $info->master_details);
-                            //var_dump($info);
                         endif;
                        ?>
                     </div>
@@ -498,7 +495,7 @@ class SOLOSOE_DISPLAY_PRODUCT {
                 
                 <div class="carousel-inner">
                     <?php foreach ($images as $key=>$value): ?>
-                        <div class="carousel-item <?php if ($key == 0): ?> active <?php endif;?>">
+                        <div class="carousel-item<?php if ($key == 0): ?> active<?php endif;?>">
                             <img class="d-block" src="<?=$value; ?>">
                         </div>
                     <?php endforeach; ?>
@@ -512,6 +509,7 @@ class SOLOSOE_DISPLAY_PRODUCT {
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                     <span class="sr-only">Next</span>
                 </a>
+            
             </div>
         
     <?php

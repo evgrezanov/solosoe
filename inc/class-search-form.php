@@ -34,7 +34,7 @@ class SOLOSOE_SEARCH_FORM {
      */
     public static function assets(){
         
-        wp_enqueue_script( 'typeahead', SOLOSOE_URL . 'asset/lib/typeahead/typeahead.bundle.js', array(), '1.0.0' );
+        wp_enqueue_script( 'typeahead', SOLOSOE_URL . 'asset/lib/typeahead/typeahead.min.js', array(), '1.0.0' );
         
         $arg_array = [
             'solr_url'  =>  self::get_solr_url(),
