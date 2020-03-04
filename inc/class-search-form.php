@@ -60,7 +60,7 @@ class SOLOSOE_SEARCH_FORM {
             true
         );
 
-        wp_enqueue_style('solosoe_style', SOLOSOE_URL . 'asset/style.css');
+        wp_enqueue_style('solosoe_styles', SOLOSOE_URL . 'asset/style.css');
         wp_enqueue_style('bootstrap', SOLOSOE_URL . 'asset/lib/bootstrap/css/bootstrap.min.css');
     }
 

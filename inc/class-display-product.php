@@ -67,8 +67,7 @@ class SOLOSOE_DISPLAY_PRODUCT {
             
             $cn_dot_7 = round($info->cn_dot_7,0);
             $cn_dot_1_7 = substr($cn_dot_7, 0, 1);
-            if ( !is_null($cn_dot_7) && $cn_dot_1_7 > 6):
-            //if ( !is_null($cn_dot_7)):
+            if ( !is_null($cn_dot_7) && $cn_dot_1_7 >= 6):
                 $cn_dot_7_tmp = $info->cn_dot_7;
                 // test data
                 //$cima_id = 912485;
@@ -104,6 +103,7 @@ class SOLOSOE_DISPLAY_PRODUCT {
     //  Shortcode for display product
     public static function render_product_card(){
         $prod_data = self::get_data();
+        $cima_medicamento = json_decode($prod_data['cima_medicamento']);
         $info = json_decode($prod_data['info']);
         ob_start();
         ?>
@@ -119,14 +119,22 @@ class SOLOSOE_DISPLAY_PRODUCT {
                                 
                     <!-- Carousel -->
                     <div class="col-md-5">
-                        <?php echo self::display_products_imgs($info->images); ?>
+                        <?php 
+                            echo self::display_products_imgs($info->images);
+                            
+                            if ( !empty($fotos = $cima_medicamento->fotos) ): 
+                                foreach ($fotos as $foto):?>
+                                    <img src="<?=$foto->url?>" alt="<?=$foto->tipo?>" class="img-thumbnail">
+                                <?php
+                                endforeach;
+                            endif;
+                        ?>
                     </div>    
                                 
                     <!-- Product info -->
                     <div class="col-md-7 px-3">           
                        <?php 
                         $cima_psuministro = json_decode($prod_data['cima_psuministro']);
-                        
                         if (!empty($cima_psuministro->resultados)):
                             $resultados = $cima_psuministro->resultados;
                             echo self::display_cima_psuministro_data($info, $resultados[0]);
@@ -299,7 +307,7 @@ class SOLOSOE_DISPLAY_PRODUCT {
                         </h5>
                     </div>
                 </div>
-                <div class="card bg-light xs-2">
+                <div class="card bg-light xs-1">
                     <div class="card-body">
                         <h5 class="card-title">
                         <span class="product-footer-properties">Generico</span>                            
@@ -316,7 +324,7 @@ class SOLOSOE_DISPLAY_PRODUCT {
                         </h5>
                     </div>
                 </div>
-                <div class="card bg-light xs-2">
+                <div class="card bg-light xs-1">
                     <div class="card-body">
                         <h5 class="card-title">
                         <span class="product-footer-properties">Conduc</span>                            
