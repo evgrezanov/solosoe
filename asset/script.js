@@ -47,7 +47,7 @@ jQuery( document ).ready( function( $ ) {
                         settings.dataType = "jsonp";
                         settings.jsonp = 'json.wrf';
                         settings.url = settings.url.replace('%QUERY', query);
-                        //console.log(settings.url);
+                        console.log(settings.url);
                         return settings;
                     },
                     transform: transform_products,

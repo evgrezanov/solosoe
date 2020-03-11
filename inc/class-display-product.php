@@ -20,16 +20,20 @@ class SOLOSOE_DISPLAY_PRODUCT {
         'cima_medicamento'      => NULL,
         'cima_medicamento_error'=> NULL,
     );
+    
+    public static $links = array(
+        'link1' => NULL,
+        'link2' => NULL,
+        'link3' => NULL,
+        'link4' => NULL,
+    );
    
    /**
     * Init class
     */
     public static function init(){
-        
         add_shortcode('display_product_card', [__CLASS__, 'render_product_card']);
-        
         add_action('display_shops', [__CLASS__, 'display_shops'], 1, 1);
-
     }
 
     // Take all API data
@@ -41,7 +45,9 @@ class SOLOSOE_DISPLAY_PRODUCT {
             
             //todo change - store urls at DB as plugin options without .'/?format=json'
             $prd_info_url = 'http://34.243.79.103:8000/services/product/'.$product_id;
+            self::$links['link1'] = $prd_info_url;
             $prd_price_url = 'http://34.243.79.103:8000/services/optimal-price/'.$product_id;
+            self::$links['link2'] = $prd_price_url;
 
             $product_info = wp_remote_get($prd_info_url);
             if (is_wp_error($product_info)):
@@ -65,7 +71,8 @@ class SOLOSOE_DISPLAY_PRODUCT {
                 
             $info = json_decode($info);
             
-            $cn_dot_7 = round($info->cn_dot_7,0);
+            //$cn_dot_7 = round($info->cn_dot_7,0);
+            $cn_dot_7 = floor($info->cn_dot_7);
             $cn_dot_1_7 = substr($cn_dot_7, 0, 1);
             if ( !is_null($cn_dot_7) && $cn_dot_1_7 >= 6):
                 $cn_dot_7_tmp = $info->cn_dot_7;
@@ -76,6 +83,7 @@ class SOLOSOE_DISPLAY_PRODUCT {
 
 
                 $cima_psuministro_url = 'https://cima.aemps.es/cima/rest/psuministro/'.$cima_id;
+                self::$links['link3'] = $cima_psuministro_url;
                 $cima_psuministro = wp_safe_remote_request($cima_psuministro_url, array('timeout'=>20));
                 if (is_wp_error($cima_psuministro)):
                     $cima_psuministro_error = $cima_psuministro->get_error_message();
@@ -85,6 +93,7 @@ class SOLOSOE_DISPLAY_PRODUCT {
                 endif;
 
                 $cima_medicamento_url = 'https://cima.aemps.es/cima/rest/medicamento?cn='.$cima_id;
+                self::$links['link4'] = $cima_medicamento_url;
                 $cima_medicamento = wp_safe_remote_request($cima_medicamento_url, array('timeout'=>20));
                 if (is_wp_error($cima_medicamento)):
                     $cima_medicamento_error = $cima_medicamento->get_error_message();
@@ -112,6 +121,20 @@ class SOLOSOE_DISPLAY_PRODUCT {
             <!-- Search form-->
             <?php echo self::display_solr_search_form(); ?>
             
+            <?php if( current_user_can('manage_options') ): ?>
+	            <div class="alert alert-success" role="alert">
+                    <h4 class="alert-heading">You see this message, becourse you are administrator!</h4>
+                    <p>link1: <a href="<?=self::$links['link1'] ?>" class="alert-link"><?=self::$links['link1'] ?></a></p>
+                    <p>link2: <a href="<?=self::$links['link2'] ?>" class="alert-link"><?=self::$links['link2'] ?></a></p>
+                    <p>link3: <a href="<?=self::$links['link3'] ?>" class="alert-link"><?=self::$links['link3'] ?></a></p>
+                    <p>link4: <a href="<?=self::$links['link4'] ?>" class="alert-link"><?=self::$links['link4'] ?></a></p>
+                    <hr>
+                    <p class="mb-0">follow the links to view the returned data on services</p>
+                </div>
+            <?php
+                endif;
+            ?>    
+
             <!-- Card Start -->
             <div class="card solosoe-main-product-data">
                 
@@ -414,7 +437,7 @@ class SOLOSOE_DISPLAY_PRODUCT {
     public static function display_cima_psuministro_data($product_info, $resultados){
         ?>
         <h4 class="card-title pt-3 pb-3 greenbg">
-            <small class="text-muted"><?php echo $resultados->cn; ?></small>  
+            <small class="text-muted cima"><?php echo $resultados->cn; ?></small>  
             <?php echo $resultados->nombre; ?>
         </h4>
         <div class="card-block bg-danger solosoe-psuministro-resultados px-6">
@@ -447,7 +470,7 @@ class SOLOSOE_DISPLAY_PRODUCT {
         ?>
         <div class="card-block px-6">
             <h4 class="card-title">
-                <small class="text-muted"><?php echo $product_info->ean; ?></small>  
+                <small class="text-muted price"><?php echo $product_info->ean; ?></small>  
                 <?php echo $product_info->product_name; ?>
             </h4>
             <h5 class="card-subtitle mb-2">
