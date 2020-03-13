@@ -38,7 +38,7 @@ class SOLOSOE_SEARCH_FORM {
         
         $arg_array = [
             'solr_url'  =>  self::get_solr_url(),
-            'site_url'  =>  get_site_url().'/solosoe-search/?prd_id=',
+            'site_url'  =>  get_site_url().'/search/?prd_id=',
         ];
 
         wp_register_script(

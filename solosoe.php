@@ -5,7 +5,7 @@
  * Description: Custom plugin for search and display remote pharma products from Solr and cima
  * Author:      Evgeniy Rezanov
  * Author URI:  https://www.upwork.com/freelancers/~01ea58721977099d53
- * Version:     1.5
+ * Version:     1.6
  *
  * @copyright  Copyright (c) 2020
  */
@@ -35,7 +35,7 @@ class SOLOSOE {
     */
     public static function init(){
         //add_action( 'wp', [__CLASS__, 'members_only'] );
-        require_once('inc/class-options.php');
+        //require_once('inc/class-options.php');
         require_once('inc/class-search-form.php');
         require_once('inc/class-display-product.php');
     }
