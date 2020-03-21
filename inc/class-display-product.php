@@ -28,9 +28,7 @@ class SOLOSOE_DISPLAY_PRODUCT {
         'link4' => NULL,
     );
    
-   /**
-    * Init class
-    */
+    //Init class
     public static function init(){
         add_shortcode('display_product_card', [__CLASS__, 'render_product_card']);
         add_action('display_shops', [__CLASS__, 'display_shops'], 1, 1);
@@ -70,15 +68,12 @@ class SOLOSOE_DISPLAY_PRODUCT {
             endif;
                 
             $info = json_decode($info);
-            
-            //$cn_dot_7 = round($info->cn_dot_7,0);
-            $cn_dot_7 = floor($info->cn_dot_7);
-            $cn_dot_1_7 = substr($cn_dot_7, 0, 1);
+            if (isset($info->cn_dot_7)):
+                $cn_dot_7 = floor($info->cn_dot_7);
+                $cn_dot_1_7 = substr($cn_dot_7, 0, 1);
+            endif;
             if ( !is_null($cn_dot_7) && $cn_dot_1_7 >= 6):
                 $cn_dot_7_tmp = $info->cn_dot_7;
-                // test data
-                //$cima_id = 912485;
-                //$cima_id = '009258';
                 $cima_id = $cn_dot_7;
 
                 $cima_psuministro_url = 'https://cima.aemps.es/cima/rest/psuministro/'.$cima_id;
@@ -121,8 +116,11 @@ class SOLOSOE_DISPLAY_PRODUCT {
             <?php echo self::display_solr_search_form(); ?>
             
             <?php if( current_user_can('manage_options') && !empty(self::$links['link1'])): ?>
-	            <div class="alert alert-success" role="alert">
+	            <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <h4 class="alert-heading">You see this message, becourse you are administrator!</h4>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                     <p>link1: <a href="<?=self::$links['link1'] ?>" class="alert-link"><?=self::$links['link1'] ?></a></p>
                     <p>link2: <a href="<?=self::$links['link2'] ?>" class="alert-link"><?=self::$links['link2'] ?></a></p>
                     <p>link3: <a href="<?=self::$links['link3'] ?>" class="alert-link"><?=self::$links['link3'] ?></a></p>
@@ -142,13 +140,17 @@ class SOLOSOE_DISPLAY_PRODUCT {
                     <!-- Carousel -->
                     <div class="col-md-5">
                         <?php 
-                            echo self::display_products_imgs($info->images);
+                            if (isset($info->images))
+                                echo self::display_products_imgs($info->images);
                             
-                            if ( !empty($fotos = $cima_medicamento->fotos) ): 
-                                foreach ($fotos as $foto):?>
-                                    <img src="<?=$foto->url?>" alt="<?=$foto->tipo?>" class="img-thumbnail">
-                                <?php
-                                endforeach;
+                            if (isset($cima_medicamento->fotos)):
+                                $fotos = $cima_medicamento->fotos;
+                                if ( !empty($fotos) ): 
+                                    foreach ($fotos as $foto):?>
+                                        <img src="<?=$foto->url?>" alt="<?=$foto->tipo?>" class="img-thumbnail">
+                                    <?php
+                                    endforeach;
+                                endif;
                             endif;
                         ?>
                     </div>    
@@ -161,7 +163,8 @@ class SOLOSOE_DISPLAY_PRODUCT {
                             $resultados = $cima_psuministro->resultados;
                             echo self::display_cima_psuministro_data($info, $resultados[0]);
                         else:
-                            echo self::display_product_price($info, $prod_data['price'], $info->master_details);
+                            if (isset($info->master_details))
+                                echo self::display_product_price($info, $prod_data['price'], $info->master_details);
                         endif;
                        ?>
                     </div>
@@ -191,104 +194,118 @@ class SOLOSOE_DISPLAY_PRODUCT {
         
     //  Display cima product data from  https://cima.aemps.es/cima/rest/medicamento?cn=912485
     public static function display_cima_medicamento_data($medicamento){
-        $viasAdministracion = $medicamento->viasAdministracion;
-        $formaFarmaceutica = $medicamento->formaFarmaceutica;
-        $docs = $medicamento->docs;
-        $principiosActivos = $medicamento->principiosActivos;
-        $excipientes = $medicamento->excipientes;
-        $atcs = $medicamento->atcs;
-        if ($viasAdministracion && $formaFarmaceutica):
-        ?>
-        <!-- Product psuministro data from cima -->
-        <div class="card solosoe-cima-medicamento-product-data">
-            <div class="row px-3 py-3">
-                <div class="col-md-3">
-                    <span class="blue"><?php echo $formaFarmaceutica->nombre; ?></span>
-                    <br>
-                    <small class="solosoe-cima-label"><strong>FORMAS FARMACÉUTICAS</strong></small>
-                </div>
-                <div class="col-md-3">
-                    <span class="blue"><?php echo $medicamento->dosis; ?></span>
-                    <br>
-                    <small class="solosoe-cima-label"><strong>DOSIS</strong></small>
-                </div>
-                <div class="col-md-3">
-                    <span class="blue"><?php echo $viasAdministracion[0]->nombre; ?></span>
-                    <br>
-                    <small class="solosoe-cima-label"><strong>VÍAS DE ADMINISTRACIÓN</strong></small>
-                </div>
-                <div class="col-md-3">
-					<small class="solosoe-cima-label"><strong>LABORATORIO:</strong> <span class="blue"><?php echo $medicamento->labtitular; ?></span></small>
-                    <br>
-                    <?php 
-                        if ($docs): 
-                            ?>
-                            <ul class="list-group list-group-flush solosoe-laboratorio-docs-links">
-                            <?php
-                            foreach ($docs as $doc):
-                                $pdf_logo_url = SOLOSOE_URL . '/asset/img/pdf.svg';
-                                $html_logo_url = SOLOSOE_URL . '/asset/img/doc-file.svg';
-                            ?>    
-                                <li class="list-group-item">
-                                    <div>
-                                        <a href="<?= $doc->url; ?>" target="_blank"><img src="<?= $pdf_logo_url; ?>" width="40" height="40"></a> 
-                                        <a href="<?= $doc->urlHtml; ?>" target="_blank"><img src="<?= $html_logo_url; ?>" width="40" height="40"></a>
-                                    </div>
-                                </li>
-                            <?php    
-                            endforeach;
-                            ?>
-                            </ul>
-                            <?php
-                        endif;
-                    ?>
-                </div>
-            </div>
-        </div>
+        if (isset($medicamento->viasAdministracion))
+            $viasAdministracion = $medicamento->viasAdministracion;
         
-        <div class="card solosoe-cima-medicamento-product-data blue">
-            <div class="row px-3 py-3">
-                
-                <div class="col-md-4">
-                    <?php if ($principiosActivos): ?>
-                    <span class="solosoe-cima-label-up"><strong>PRINCIPIOS ACTIVOS</strong></span>
-                    <ul>
-                    <?php foreach ($principiosActivos as $activos): ?>
-                        <li><?= $activos->nombre.' '.$activos->cantidad.' '.$activos->unidad; ?></li>
-                    <?php endforeach; ?>
-                    </ul>
-                    <br>
-                    <?php endif; ?>
-                </div>
-                
-                <div class="col-md-4">
-                    <?php if ($excipientes): ?>
-                    <span class="solosoe-cima-label-up"><strong>EXCIPIENTES</strong></span>
-                    <ul>
-                    <?php foreach ($excipientes as $excipient): ?>
-                        <li><?= $excipient->nombre.' '.$excipient->cantidad.' '.$excipient->unidad; ?></li>
-                    <?php endforeach; ?>
-                    </ul>
-                    <br>
-                    <?php endif; ?>
-                </div>
-                
-                <div class="col-md-4">
-                    <?php if ($atcs): ?>
-                    <span class="solosoe-cima-label-up"><strong>CÓDIGOS ATC</strong></span>
-                    <ul>
-                    <?php foreach ($atcs as $atc): ?>
-                        <li><?= $atc->codigo.' - '.$atc->nombre; ?></li>
-                    <?php endforeach; ?>
-                    </ul>
-                    <br>
-                    <?php endif; ?>
+        if (isset($medicamento->formaFarmaceutica))
+            $formaFarmaceutica = $medicamento->formaFarmaceutica;
+        
+        if (isset($medicamento->docs))
+            $docs = $medicamento->docs;
+        
+        if (isset($medicamento->principiosActivos))
+            $principiosActivos = $medicamento->principiosActivos;
+        
+        if (isset($medicamento->excipientes))
+            $excipientes = $medicamento->excipientes;
+
+        if (isset($medicamento->atcs))
+            $atcs = $medicamento->atcs;
+
+        
+        if (!empty($viasAdministracion) && !empty($formaFarmaceutica)):
+        ?>
+        
+            <!-- Product psuministro data from cima -->
+            <div class="card solosoe-cima-medicamento-product-data">
+                <div class="row px-3 py-3">
+                    <div class="col-md-3">
+                        <span class="blue"><?php echo $formaFarmaceutica->nombre; ?></span>
+                        <br>
+                        <small class="solosoe-cima-label"><strong>FORMAS FARMACÉUTICAS</strong></small>
+                    </div>
+                    <div class="col-md-3">
+                        <span class="blue"><?php echo $medicamento->dosis; ?></span>
+                        <br>
+                        <small class="solosoe-cima-label"><strong>DOSIS</strong></small>
+                    </div>
+                    <div class="col-md-3">
+                        <span class="blue"><?php echo $viasAdministracion[0]->nombre; ?></span>
+                        <br>
+                        <small class="solosoe-cima-label"><strong>VÍAS DE ADMINISTRACIÓN</strong></small>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="solosoe-cima-label"><strong>LABORATORIO:</strong> <span class="blue"><?php echo $medicamento->labtitular; ?></span></small>
+                        <br>
+                        <?php 
+                            if ($docs): 
+                                ?>
+                                <ul class="list-group list-group-flush solosoe-laboratorio-docs-links">
+                                <?php
+                                foreach ($docs as $doc):
+                                    $pdf_logo_url = SOLOSOE_URL . '/asset/img/pdf.svg';
+                                    $html_logo_url = SOLOSOE_URL . '/asset/img/doc-file.svg';
+                                ?>    
+                                    <li class="list-group-item">
+                                        <div>
+                                            <a href="<?= $doc->url; ?>" target="_blank"><img src="<?= $pdf_logo_url; ?>" width="40" height="40"></a> 
+                                            <a href="<?= $doc->urlHtml; ?>" target="_blank"><img src="<?= $html_logo_url; ?>" width="40" height="40"></a>
+                                        </div>
+                                    </li>
+                                <?php    
+                                endforeach;
+                                ?>
+                                </ul>
+                                <?php
+                            endif;
+                        ?>
+                    </div>
                 </div>
             </div>
-        </div>
+            
+            <div class="card solosoe-cima-medicamento-product-data blue">
+                <div class="row px-3 py-3">
+                    
+                    <div class="col-md-4">
+                        <?php if ($principiosActivos): ?>
+                        <span class="solosoe-cima-label-up"><strong>PRINCIPIOS ACTIVOS</strong></span>
+                        <ul>
+                        <?php foreach ($principiosActivos as $activos): ?>
+                            <li><?= $activos->nombre.' '.$activos->cantidad.' '.$activos->unidad; ?></li>
+                        <?php endforeach; ?>
+                        </ul>
+                        <br>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <?php if ($excipientes): ?>
+                        <span class="solosoe-cima-label-up"><strong>EXCIPIENTES</strong></span>
+                        <ul>
+                        <?php foreach ($excipientes as $excipient): ?>
+                            <li><?= $excipient->nombre.' '.$excipient->cantidad.' '.$excipient->unidad; ?></li>
+                        <?php endforeach; ?>
+                        </ul>
+                        <br>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <?php if ($atcs): ?>
+                        <span class="solosoe-cima-label-up"><strong>CÓDIGOS ATC</strong></span>
+                        <ul>
+                        <?php foreach ($atcs as $atc): ?>
+                            <li><?= $atc->codigo.' - '.$atc->nombre; ?></li>
+                        <?php endforeach; ?>
+                        </ul>
+                        <br>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
 
     <?php
-    endif; 
+        endif; 
     }
 
     public static function display_cima_medicamento_data_footer($medicamento){
@@ -420,12 +437,14 @@ class SOLOSOE_DISPLAY_PRODUCT {
     }
 
     //  Display search form
-    public static function display_solr_search_form(){   
+    public static function display_solr_search_form(){
+        $spinner_url = SOLOSOE_URL . '/asset/img/spinner.gif';
         ?> 
         <div id="solosoe-custom-templates" class="container p-3">
 	        <form>
 		        <div class="form-group">
 			        <input id="solr-typeahead" type="search" class="search-field" placeholder="Start type product name"/>
+                    <img class="Typeahead-spinner" src="<?= $spinner_url; ?>">
 		        </div>
 	        </form>
         </div>

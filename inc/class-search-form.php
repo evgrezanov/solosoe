@@ -1,5 +1,5 @@
 <?php
-
+use SOLOSOE\Services;
 namespace SOLOSOE\Search;
 
 defined('ABSPATH') || exit;
@@ -33,8 +33,21 @@ class SOLOSOE_SEARCH_FORM {
      * Enqueue scripts.
      */
     public static function assets(){
-        
-        wp_enqueue_script( 'typeahead', SOLOSOE_URL . 'asset/lib/typeahead/typeahead.bundle.min.js', array(), '1.0.0' );
+
+        wp_enqueue_script( 
+            'typeahead', 
+            SOLOSOE_URL . 'asset/lib/typeahead/typeahead.bundle.min.js', 
+            array(), 
+            SOLOSOE_VERSION 
+        );
+
+        wp_enqueue_script(
+            'bootstrapjs',
+            plugins_url('solosoe/asset/lib/bootstrap/js/bootstrap.js'),
+            array(),
+            SOLOSOE_VERSION,
+            true
+        );
         
         $arg_array = [
             'solr_url'  =>  self::get_solr_url(),
@@ -56,7 +69,7 @@ class SOLOSOE_SEARCH_FORM {
             'solosoe_script',
             plugins_url('solosoe/asset/script.js'),
             ['jquery', 'typeahead'],
-            $ver = '1.8',
+            SOLOSOE_VERSION,
             true
         );
 

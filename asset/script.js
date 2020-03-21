@@ -41,12 +41,15 @@ jQuery( document ).ready( function( $ ) {
                     wildcard: '%QUERY',
                     prepare: function(query, settings) {
                         settings.beforeSend = function(jqXHR, settings) {
-                            settings.xhrFields = { withCredentials: true };
+                            settings.xhrFields = { 
+                                withCredentials: true 
+                            };
                         };
                         settings.crossDomain = true;
                         settings.dataType = "jsonp";
                         settings.jsonp = 'json.wrf';
                         settings.url = settings.url.replace('%QUERY', query);
+                        settings.url = settings.url.replace(/ /g, '%20');
                         console.log(settings.url);
                         return settings;
                     },
@@ -74,7 +77,13 @@ jQuery( document ).ready( function( $ ) {
                 return '<p><strong>' + product.name_code + '</strong></p>';
             }
         }
-    }, datasets);
+    }, datasets)
+    .on('typeahead:asyncrequest', function() {
+        $('.Typeahead-spinner').show();
+    })
+    .on('typeahead:asynccancel typeahead:asyncreceive', function() {
+        $('.Typeahead-spinner').hide();
+    });
 
     // redirect to product page
     $('#solr-typeahead').bind('typeahead:select', function(ev, suggestion) {

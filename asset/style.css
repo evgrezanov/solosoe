@@ -73,7 +73,7 @@ ul {
     
 .card {
     box-shadow:none;
-    border:none;
+    border:none !important;
 }
 
 .list-group {
@@ -198,4 +198,8 @@ input#solr-typeahead.search-field.tt-input:hover {
 .tt-dataset.tt-dataset-products {
     width: 700px;
     background-color: white;
+}
+
+.Typeahead-spinner {
+    display: none;
 }
