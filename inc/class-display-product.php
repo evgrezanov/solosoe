@@ -81,7 +81,6 @@ class SOLOSOE_DISPLAY_PRODUCT {
                 //$cima_id = '009258';
                 $cima_id = $cn_dot_7;
 
-
                 $cima_psuministro_url = 'https://cima.aemps.es/cima/rest/psuministro/'.$cima_id;
                 self::$links['link3'] = $cima_psuministro_url;
                 $cima_psuministro = wp_safe_remote_request($cima_psuministro_url, array('timeout'=>20));
@@ -121,7 +120,7 @@ class SOLOSOE_DISPLAY_PRODUCT {
             <!-- Search form-->
             <?php echo self::display_solr_search_form(); ?>
             
-            <?php if( current_user_can('manage_options') ): ?>
+            <?php if( current_user_can('manage_options') && !empty(self::$links['link1'])): ?>
 	            <div class="alert alert-success" role="alert">
                     <h4 class="alert-heading">You see this message, becourse you are administrator!</h4>
                     <p>link1: <a href="<?=self::$links['link1'] ?>" class="alert-link"><?=self::$links['link1'] ?></a></p>
@@ -445,12 +444,16 @@ class SOLOSOE_DISPLAY_PRODUCT {
             <div class="card-header">    
                 <div class="row">
                     <div class="col-md-3">
-                        <span><?php echo(date("Y-m-d h:i:sa",$resultados->fini)); ?></span>
+                        <span>
+                            <?php echo date("d/m/Y", substr($resultados->fini, 0, 10)); ?>
+                        </span>
                         <br>
                         <small class="solosoe-cima-label zagsm"><strong>PREVISIÓN DE INICIO</strong></small>
                     </div>
                     <div class="col-md-3">
-                        <span><?php echo(date("Y-m-d h:i:sa",$resultados->ffin)); ?></span>
+                        <span>
+                            <?php echo date("d/m/Y", substr($resultados->ffin, 0, 10)); ?>
+                        </span>
                         <br>
                         <small class="solosoe-cima-label zagsm"><strong>PREVISIÓN DE FINALIZACIÓN</strong></small>
                     </div>
@@ -466,7 +469,7 @@ class SOLOSOE_DISPLAY_PRODUCT {
     }
 
     public static function display_product_price($product_info, $product_price, $master_details){
-        $product_price = json_decode($product_price);
+        if (!empty($product_price = json_decode($product_price))):
         ?>
         <div class="card-block px-6">
             <h4 class="card-title">
@@ -476,9 +479,9 @@ class SOLOSOE_DISPLAY_PRODUCT {
             <h5 class="card-subtitle mb-2">
                 <small class="solosoe-pr-comercios text-muted">№ de Comercios: </small> <strong><?php echo $product_info->mst_prd_id ?></strong>
                 <small class="solosoe-pr-rango-precios text-muted">Rango de precios: </small> <strong><?php echo $product_info->min_sale_price; ?> - <?php echo $product_info->max_sale_price; ?> €</strong>
+                <div id="solosoe-recommended-price" class="title badge badge-warning">Precio Competitevo <span class="solosoe-optimal-price-big"><?php echo $product_price->price; ?> €</span></div>    
             </h5>
-            <div id="solosoe-recommended-price" class="h1 title badge badge-warning mb-2">Precio Competitevo <span class="solosoe-optimal-price-big"><?php echo $product_price->price; ?> €</span></div>
-            <p class="card-text"><?php echo $product_info->product_description; ?></p>    
+            <p class="card-text"><?php echo $product_info->product_description; ?></p>
         </div>
         <div class="row card-block px-6">
             <?php 
@@ -494,6 +497,7 @@ class SOLOSOE_DISPLAY_PRODUCT {
             ?>
         </div>       
     <?php
+        endif;
     }
     
     //  Help function for display avalible shops
