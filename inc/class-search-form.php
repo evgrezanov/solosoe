@@ -37,14 +37,14 @@ class SOLOSOE_SEARCH_FORM {
         wp_enqueue_script( 
             'typeahead', 
             SOLOSOE_URL . 'asset/lib/typeahead/typeahead.bundle.min.js', 
-            array(), 
+            ['jquery'], 
             SOLOSOE_VERSION 
         );
 
         wp_enqueue_script(
             'bootstrapjs',
             plugins_url('solosoe/asset/lib/bootstrap/js/bootstrap.js'),
-            array(),
+            ['jquery'],
             SOLOSOE_VERSION,
             true
         );
@@ -68,7 +68,7 @@ class SOLOSOE_SEARCH_FORM {
         wp_enqueue_script(
             'solosoe_script',
             plugins_url('solosoe/asset/script.js'),
-            ['jquery', 'typeahead'],
+            ['jquery', 'typeahead', 'bootstrapjs'],
             SOLOSOE_VERSION,
             true
         );

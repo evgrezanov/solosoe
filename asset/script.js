@@ -3,27 +3,41 @@ jQuery( document ).ready( function( $ ) {
     var solosoeParams = window['solrUrl'];
     solrUrl = solosoeParams['solr_url'];
     siteUrl = solosoeParams['site_url'];
-
+    
     // return name_code from solr
     var display_product = function( product ) {
         return product.name_code;
     }
 
+    var one_result;
+
     // transform solr search result
     var transform_products = function( data ) {
         var docs = JSON.stringify(data.response.docs);
         var products = JSON.parse(docs);
-        console.log(products);
-        return $.map( products, function( product ) {
-            return {
-                id: product.id,
-                name_code: product.name_code,
-                prd_id: product.prd_id,
-                score: product.score,
-                prod_url: siteUrl + product.prd_id,
-            };
-        } );
+        one_result = products.length;
+        console.log(one_result);
+        if (one_result == 1) {
+            console.log(products);
+            var prod_id = products[0].name_code;
+            console.log(prod_id);
+            if (prod_id.length >= 6 && prod_id.length <= 11) {
+                console.log(siteUrl + products[0].prd_id);
+                window.location.href = siteUrl + products[0].prd_id;
+            }
+        } else {
+            return $.map( products, function( product ) {
+                return {
+                    id: product.id,
+                    name_code: product.name_code,
+                    prd_id: product.prd_id,
+                    score: product.score,
+                    prod_url: siteUrl + product.prd_id,
+                };
+            } );
+        }    
     };
+
 
     // Bloodhound configuration 
     var datasets = [
@@ -67,15 +81,11 @@ jQuery( document ).ready( function( $ ) {
         minLength: 3,
         highlight: true,
         hint: true,
+        autoselect: true,
         templates: {
-            empty: [
-              '<div class="empty-message">',
-                'unable to find any products that match the current query',
-              '</div>'
-            ].join('\n'),
             suggestion: function (data) {
                 return '<p><strong>' + product.name_code + '</strong></p>';
-            }
+            },
         }
     }, datasets)
     .on('typeahead:asyncrequest', function() {
@@ -90,5 +100,10 @@ jQuery( document ).ready( function( $ ) {
         console.log('Selection: ' + suggestion.prod_url);
         window.location.href = suggestion.prod_url;
     });
+    
+    // redirect for barcode scanner
+    $('#solr-typeahead').bind('typeahead:render', function(ev, suggestions, flag, datasets) {
+        $('#solr-typeahead').parent().find('.tt-selectable:first').addClass('tt-cursor');
+    });
 
-} );
+});

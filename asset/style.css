@@ -9,6 +9,7 @@
     box-shadow: none;
      
 }
+
 .card {
     font-size: 1em;
     overflow: hidden;
@@ -26,6 +27,7 @@
 .product-footer-properties{
     color:green;
 }
+
 span.solosoe-boolean-product-properties.slosoe-yes {
     color:green;
 }
@@ -136,7 +138,7 @@ a.carousel-control-prev{
 }
 /* product card styles end */
 
-/* search form style end */
+/* search form style start */
 input#solr-typeahead.search-field.tt-input {
 	border: 2px solid grey;
 	border-radius: 4px;
